@@ -144,11 +144,21 @@ export function startCropWithRatio(ratio: string): void {
 
 export function toggleCropMode(): void {
   app.cropMode = !app.cropMode;
-  if (app.cropMode) {
-    // 초기 크롭 영역: 이미지 중앙 50%
-    const iw = app.canvas.width;
-    const ih = app.canvas.height;
-    app.cropRect = { x: iw * 0.25, y: ih * 0.25, w: iw * 0.5, h: ih * 0.5 };
+  if (app.cropMode && app.currentImage) {
+    // 이미지가 캔버스 상에서 차지하는 실제 영역 계산
+    const cw = app.canvas.width;
+    const ch = app.canvas.height;
+    const iw = app.currentImage.naturalWidth  * app.zoom;
+    const ih = app.currentImage.naturalHeight * app.zoom;
+    const imgL = cw / 2 + app.pan.x - iw / 2;
+    const imgT = ch / 2 + app.pan.y - ih / 2;
+    // 초기 크롭: 이미지 영역 중앙 50%
+    app.cropRect = {
+      x: imgL + iw * 0.25,
+      y: imgT + ih * 0.25,
+      w: iw * 0.5,
+      h: ih * 0.5,
+    };
     app.canvas.style.cursor = 'crosshair';
     showToast('✂️ 자르기 모드 — 영역을 드래그하거나 Enter로 적용');
   } else {
@@ -163,21 +173,41 @@ export function applyCrop(): void {
   const { x, y, w, h } = app.cropRect;
   if (w < 2 || h < 2) { showToast('자르기 영역이 너무 작습니다.'); return; }
 
+  // 캔버스 좌표 → 이미지 픽셀 좌표 변환
+  const cw = app.canvas.width;
+  const ch = app.canvas.height;
+  const iw = app.currentImage.naturalWidth;
+  const ih = app.currentImage.naturalHeight;
+  const imgL = cw / 2 + app.pan.x - (iw * app.zoom) / 2;
+  const imgT = ch / 2 + app.pan.y - (ih * app.zoom) / 2;
+
+  const srcX = Math.round((x - imgL) / app.zoom);
+  const srcY = Math.round((y - imgT) / app.zoom);
+  const srcW = Math.round(w / app.zoom);
+  const srcH = Math.round(h / app.zoom);
+
+  // 이미지 경계 내로 클램프
+  const cx = Math.max(0, Math.min(iw - 1, srcX));
+  const cy = Math.max(0, Math.min(ih - 1, srcY));
+  const cw2 = Math.max(1, Math.min(iw - cx, srcW));
+  const ch2 = Math.max(1, Math.min(ih - cy, srcH));
+
   const tmp = document.createElement('canvas');
-  tmp.width  = Math.round(w);
-  tmp.height = Math.round(h);
+  tmp.width  = cw2;
+  tmp.height = ch2;
   const tc = tmp.getContext('2d')!;
-  tc.drawImage(app.canvas, x, y, w, h, 0, 0, w, h);
+  tc.drawImage(app.currentImage, cx, cy, cw2, ch2, 0, 0, cw2, ch2);
 
   const newImg = new Image();
   newImg.onload = () => {
     app.currentImage = newImg;
-    app.canvas.width  = Math.round(w);
-    app.canvas.height = Math.round(h);
+    app.pan  = { x: 0, y: 0 };
+    app.zoom = 1;
     app.cropMode = false;
     app.cropRect = null;
     app.canvas.style.cursor = 'grab';
     saveHistory();
+    fitToScreen();
     renderCanvas();
     updateStatus();
   };
@@ -186,10 +216,14 @@ export function applyCrop(): void {
 
 function drawCropOverlay(ctx: CanvasRenderingContext2D, cw: number, ch: number, r: CropRect): void {
   ctx.save();
+  // evenodd 패스로 오버레이 → clearRect(회색 박스) 없음
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.fillRect(0, 0, cw, ch);
-  ctx.clearRect(r.x, r.y, r.w, r.h);
-  ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+  ctx.beginPath();
+  ctx.rect(0, 0, cw, ch);
+  ctx.rect(r.x, r.y, r.w, r.h);
+  ctx.fill('evenodd');
+  // 선택 영역 테두리
+  ctx.strokeStyle = 'rgba(255,255,255,0.9)';
   ctx.lineWidth = 1.5;
   ctx.strokeRect(r.x, r.y, r.w, r.h);
   // 3등분 가이드
@@ -201,7 +235,7 @@ function drawCropOverlay(ctx: CanvasRenderingContext2D, cw: number, ch: number, 
   }
   // 핸들
   const hs = 8;
-  const handles = [
+  const handles: [number, number][] = [
     [r.x, r.y], [r.x + r.w/2, r.y], [r.x + r.w, r.y],
     [r.x, r.y + r.h/2],              [r.x + r.w, r.y + r.h/2],
     [r.x, r.y + r.h], [r.x + r.w/2, r.y + r.h], [r.x + r.w, r.y + r.h],
@@ -404,7 +438,6 @@ function handleCropMouseMove(x: number, y: number): void {
     if (app.cropDragHandle.includes('l')) { r.x += dx; r.w = Math.max(10, r.w - dx); }
     if (app.cropDragHandle.includes('b')) r.h = Math.max(10, r.h + dy);
     if (app.cropDragHandle.includes('t')) { r.y += dy; r.h = Math.max(10, r.h - dy); }
-    if (app.cropDragHandle === 'br')  { r.w = Math.max(10, r.w + dx); r.h = Math.max(10, r.h + dy); }
   }
   renderCanvas();
 }

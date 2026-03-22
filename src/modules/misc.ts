@@ -4,6 +4,7 @@ import { app } from '../store';
 import { showToast } from '../utils';
 import { renderCanvas, saveHistory } from './canvas';
 import { loadMedia } from './player';
+import { createThumbnailEl } from '../ui/thumbnail';
 
 export async function showCaptureMenu() {
             const modal = document.createElement('div');
@@ -558,9 +559,8 @@ async function captureScreen(filename: string): Promise<void> {
               type: 'image', modified: false,
             };
             app.images.push(data as typeof app.images[0]);
-            // 썸네일 생성 & 이미지 로드 (window 경유)
-            const w = window as Window & Record<string, unknown>;
-            if (typeof w.createThumbnail === 'function') w.createThumbnail(app.images.length - 1);
+            // 썸네일 패널에 추가 후 해당 이미지 로드
+            createThumbnailEl(app.images.length - 1);
             loadMedia(app.images.length - 1);
             // 모달 닫기
             document.querySelector('.modal-overlay')?.remove();
