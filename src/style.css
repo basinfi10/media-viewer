@@ -1,0 +1,1798 @@
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background: #f0f0f0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* 1. 메뉴바 */
+        .menubar {
+            background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+            border-bottom: 1px solid #c0c0c0;
+            display: flex;
+            align-items: center;
+            padding: 0;
+            height: 24px;
+            font-size: 13px;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .menu-item {
+            padding: 4px 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background: #e5f1fb;
+            border: 1px solid #0078d7;
+            padding: 3px 11px;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #c0c0c0;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            min-width: 200px;
+            z-index: 10000;
+        }
+
+        .menu-item:hover .dropdown-menu,
+        .dropdown-menu:hover {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 6px 30px 6px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-item:hover {
+            background: #e5f1fb;
+        }
+
+        .dropdown-separator {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 3px 0;
+        }
+
+        .shortcut {
+            color: #666;
+            font-size: 11px;
+            margin-left: 20px;
+        }
+
+        /* 2. 툴바 */
+        .toolbar {
+            background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+            border-bottom: 1px solid #c0c0c0;
+            padding: 4px 8px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            position: relative;
+        }
+        .toolbar::-webkit-scrollbar { display: none; }
+
+        /* ── 창 전체화면 CSS (win-fullscreen 클래스 — 미사용, 제거됨) ── */
+
+        .tool-group {
+            display: flex;
+            gap: 2px;
+            padding: 0 4px;
+            border-right: 1px solid #d0d0d0;
+        }
+
+        .tool-group:last-child {
+            border-right: none;
+        }
+
+        .tool-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3px 6px;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            background: none;
+            min-width: 48px;
+            transition: all 0.1s;
+        }
+
+        .tool-btn:hover {
+            background: #e5f1fb;
+            border: 1px solid #0078d7;
+        }
+
+        .tool-btn:active {
+            background: #cce4f7;
+        }
+
+        .tool-btn.active {
+            background: #cce4f7;
+            border: 1px solid #0078d7;
+        }
+
+        .tool-icon {
+            font-size: 16px;
+            margin-bottom: 1px;
+        }
+
+        .tool-label {
+            font-size: 10px;
+            color: #000;
+        }
+
+        /* 3. 메인 컨텐츠 */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 24px - var(--toolbar-h, 46px) - 22px); /* menubar - toolbar - statusbar */
+            background: #808080;
+        }
+
+        /* 왼쪽 썸네일 패널 */
+        .thumbnail-panel {
+            width: 200px;
+            background: #e8e8e8;
+            border-right: 1px solid #c0c0c0;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s;
+        }
+
+        .thumbnail-panel.collapsed {
+            width: 24px;
+            overflow: visible;
+        }
+        
+        .thumbnail-panel.collapsed .panel-header,
+        .thumbnail-panel.collapsed .thumbnail-list {
+            display: none;
+        }
+        
+        /* 세로 책갈피 스타일 */
+        .panel-tab {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            padding: 40px 4px;
+            background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+            border: 1px solid #c0c0c0;
+            border-left: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 11px;
+            font-weight: bold;
+            color: #666;
+            user-select: none;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .panel-tab:hover {
+            background: linear-gradient(180deg, #e5f1fb 0%, #d0e8f7 100%);
+            color: #0078d7;
+        }
+        
+        .thumbnail-panel.collapsed .panel-tab {
+            display: block;
+        }
+
+        .panel-header {
+            background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+            border-bottom: 1px solid #c0c0c0;
+            padding: 6px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-toggle {
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 14px;
+            user-select: none;
+        }
+        
+        .panel-toggle:hover {
+            background: #e5f1fb;
+        }
+
+        .thumbnail-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .thumbnail-item {
+            margin-bottom: 4px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            background: #d8d8d8;
+            padding: 4px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .thumbnail-item:hover {
+            border-color: #0078d7;
+            background: #e5f1fb;
+        }
+
+        .thumbnail-item.active {
+            border-color: #0078d7;
+            background: #cce4f7;
+        }
+        
+        .thumbnail-item.selected {
+            border-color: #28a745;
+            background: #d4edda;
+            box-shadow: 0 0 0 2px #28a745;
+        }
+        
+        .thumbnail-item.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 24px;
+            height: 24px;
+            background: #28a745;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .thumbnail-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: contain;
+            background: white;
+        }
+
+        .thumbnail-delete {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 20px;
+            height: 20px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 16px;
+            padding: 0;
+            display: none;
+            z-index: 10;
+        }
+        
+        .thumbnail-move-top,
+        .thumbnail-move-bottom {
+            position: absolute;
+            right: 6px;
+            width: 20px;
+            height: 18px;
+            background: rgba(0, 120, 215, 0.9);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 16px;
+            padding: 0;
+            display: none;
+            z-index: 10;
+        }
+        
+        .thumbnail-move-top {
+            top: 28px;
+        }
+        
+        .thumbnail-move-bottom {
+            top: 48px;
+        }
+
+        .thumbnail-item:hover .thumbnail-delete,
+        .thumbnail-item:hover .thumbnail-move-top,
+        .thumbnail-item:hover .thumbnail-move-bottom {
+            display: block;
+        }
+
+        .thumbnail-delete:hover {
+            background: #dc3545;
+            transform: scale(1.1);
+        }
+        
+        .thumbnail-move-top:hover,
+        .thumbnail-move-bottom:hover {
+            background: #0078d7;
+            transform: scale(1.1);
+        }
+        
+        .thumbnail-item.dragging {
+            opacity: 0.5;
+        }
+        
+        .thumbnail-item.drag-over {
+            border: 2px dashed #0078d7;
+        }
+
+        .thumbnail-info {
+            font-size: 10px;
+            color: #666;
+            margin-top: 2px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 뷰어 영역 */
+        .viewer-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #808080;
+            overflow: hidden;
+        }
+
+        .image-container {
+            position: relative;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .image-container.hidden {
+            display: none !important;
+        }
+
+        #mainCanvas {
+            display: block;
+            cursor: grab;
+        }
+
+        #mainCanvas.grabbing {
+            cursor: grabbing;
+        }
+
+        .drop-zone {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            pointer-events: none;
+        }
+
+        .drop-zone.hidden {
+            display: none;
+        }
+
+        .drop-zone-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.7;
+        }
+
+        .drop-zone-text {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .drop-zone-hint {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        /* 우측 편집 패널 */
+        .edit-panel {
+            width: 280px;
+            background: #f5f5f5;
+            border-left: 1px solid #c0c0c0;
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .edit-panel.active {
+            display: flex;
+        }
+
+        .edit-section {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px;
+        }
+
+        .edit-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .control-group {
+            margin: 8px 0;
+        }
+
+        .control-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-value {
+            font-weight: bold;
+            color: #000;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            outline: none;
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #0078d7;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid #c0c0c0;
+            font-size: 12px;
+        }
+
+        .btn-small {
+            padding: 4px 12px;
+            background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+            border: 1px solid #c0c0c0;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .btn-small:hover {
+            background: linear-gradient(180deg, #e5f1fb 0%, #cce4f7 100%);
+            border-color: #0078d7;
+        }
+
+        .btn-small:active {
+            background: #cce4f7;
+        }
+
+        /* 4. 상태바 */
+        .statusbar {
+            background: linear-gradient(180deg, #f5f5f5 0%, #e5e5e5 100%);
+            border-top: 1px solid #c0c0c0;
+            padding: 2px 8px;
+            padding-bottom: max(2px, env(safe-area-inset-bottom));
+            font-size: 11px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            height: 22px;
+        }
+
+        .status-item {
+            color: #000;
+        }
+
+        .status-separator {
+            width: 1px;
+            height: 14px;
+            background: #c0c0c0;
+        }
+
+        /* 줌 컨트롤 */
+        .zoom-control {
+            position: absolute;
+            bottom: 40px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #c0c0c0;
+            border-radius: 4px;
+            padding: 6px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .zoom-btn {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #c0c0c0;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-btn:hover {
+            background: #e5f1fb;
+            border-color: #0078d7;
+        }
+
+        .zoom-level {
+            min-width: 50px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* 스크롤바 스타일 */
+        ::-webkit-scrollbar {
+            width: 16px;
+            height: 16px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            border: 2px solid #f0f0f0;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+
+        /* 모달 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;  /* 투명 배경 - 어둡게 하지 않음 */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        
+        /* 컨텍스트 메뉴 */
+        .context-menu {
+            position: fixed;
+            background: white;
+            border: 1px solid #c0c0c0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border-radius: 4px;
+            padding: 4px 0;
+            min-width: 180px;
+            z-index: 10001;
+            display: none;
+        }
+        
+        .context-menu-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .context-menu-item:hover {
+            background: #e5f1fb;
+        }
+        
+        .context-menu-item.danger:hover {
+            background: #ffe5e5;
+            color: #dc3545;
+        }
+        
+        .context-menu-separator {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 4px 0;
+        }
+
+        /* 전체 이미지 뷰 모드 */
+        .image-view-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+        }
+        
+        .image-view-overlay.active {
+            display: flex;
+        }
+        
+        .image-view-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .image-view-img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        
+        .image-view-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.5);  /* 50% 투명도 */
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(0, 0, 0, 0.7);  /* 검은색 70% */
+            font-size: 28px;
+            font-weight: bold;
+            transition: 0.2s;
+            user-select: none;
+            opacity: 0.5;  /* 기본 50% 투명 */
+        }
+        
+        .image-view-nav:hover {
+            background: rgba(255, 255, 255, 0.8);
+            color: rgba(0, 0, 0, 0.9);
+            opacity: 1;  /* 호버 시 완전 불투명 */
+        }
+        
+        .image-view-nav.prev {
+            left: 20px;
+        }
+        
+        .image-view-nav.next {
+            right: 20px;
+        }
+        
+        .image-view-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.5);  /* 50% 투명도 */
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(0, 0, 0, 0.7);  /* 검은색 70% */
+            font-size: 24px;
+            font-weight: bold;
+            transition: 0.2s;
+            user-select: none;
+            opacity: 0.5;  /* 기본 50% 투명 */
+        }
+        
+        .image-view-close:hover {
+            background: rgba(255, 255, 255, 0.8);
+            color: rgba(0, 0, 0, 0.9);
+            opacity: 1;  /* 호버 시 완전 불투명 */
+        }
+        
+        .image-view-info {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+
+        /* ── 이미지 전체보기 미니 툴바 (중앙 터치 시 표시) ── */
+        #imageViewToolbar {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            background: rgba(0,0,0,0.75);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 32px;
+            padding: 10px 18px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+            z-index: 20010;
+            white-space: nowrap;
+        }
+        #imageViewToolbar.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .iv-tool-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 10px;
+            transition: background 0.15s;
+            min-width: 52px;
+        }
+        .iv-tool-btn:active { background: rgba(255,255,255,0.2); }
+        .iv-tool-icon { font-size: 22px; line-height: 1; }
+        .iv-tool-label { font-size: 11px; color: rgba(255,255,255,0.85); }
+
+        /* 전체보기 썸네일 스트립 */
+        #imageViewThumb {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            max-width: 90vw;
+            overflow-x: auto;
+            scrollbar-width: none;
+            background: rgba(0,0,0,0.55);
+            border-radius: 10px;
+            padding: 6px 10px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+            z-index: 20010;
+        }
+        #imageViewThumb::-webkit-scrollbar { display: none; }
+        #imageViewThumb.visible { opacity: 1; pointer-events: auto; }
+        .iv-thumb-item {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            flex-shrink: 0;
+            transition: border-color 0.15s;
+        }
+        .iv-thumb-item.active { border-color: #4fa8ff; }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border: 1px solid #c0c0c0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            min-width: 400px;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-title {
+            background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+            border-bottom: 1px solid #c0c0c0;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            width: 20px;
+            height: 20px;
+            border: 1px solid transparent;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .modal-close:hover {
+            background: #e81123;
+            color: white;
+            border-color: #e81123;
+        }
+
+        .modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #e0e0e0;
+            padding: 12px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .thumbnail-panel {
+                width: 150px;
+            }
+            
+            .edit-panel {
+                width: 220px;
+            }
+            
+            .tool-label {
+                display: none;
+            }
+            
+            .tool-btn {
+                min-width: 32px;
+            }
+        }
+
+        /* ── 스마트폰 세로 모드 최적화 ── */
+        @media (max-width: 480px) and (orientation: portrait) {
+            /* 전체 폰트 기준 상향 */
+            body { font-size: 15px; }
+
+            /* 메뉴바 높이/폰트 */
+            .menubar { height: 36px; font-size: 15px; }
+            .menu-item { padding: 6px 10px; font-size: 15px; }
+            #appFsBtn { font-size: 20px !important; padding: 0 12px !important; height: 36px !important; }
+
+            /* 툴바 아이콘 크기 */
+            .toolbar { padding: 5px 6px; }
+            .tool-icon { font-size: 22px !important; }
+            .tool-btn { min-width: 44px; padding: 4px 6px; }
+            .tool-group-label { font-size: 11px; }
+
+            /* 썸네일 패널 숨김 (세로폰은 공간 부족) */
+            .thumbnail-panel { display: none; }
+
+            /* 상태바 */
+            .statusbar { height: 28px; font-size: 13px; }
+
+            /* 메인 컨테이너 높이 재계산 */
+            .main-container {
+                height: calc(100vh - 36px - var(--toolbar-h, 50px) - 28px) !important;
+            }
+
+            /* 줌 컨트롤 버튼 크기 */
+            .zoom-btn { width: 36px; height: 36px; font-size: 16px; }
+            .zoom-level { font-size: 14px; min-width: 52px; }
+
+            /* 드롭존 안내 텍스트 */
+            .drop-zone-icon { font-size: 52px; }
+            .drop-zone-text { font-size: 16px; }
+            .drop-zone-hint { font-size: 13px; }
+
+            /* 이미지 전체보기 네비 버튼 */
+            .image-view-nav { width: 52px; height: 52px; font-size: 26px; }
+            .image-view-close { width: 48px; height: 48px; font-size: 22px; top: 12px; right: 12px; }
+            .image-view-info { font-size: 15px; padding: 8px 16px; }
+
+            /* 비디오 컨트롤 버튼 */
+            .vctrl-btn { width: 40px !important; height: 40px !important; font-size: 18px !important; }
+            #videoProgressBar { height: 60px !important; padding: 0 8px !important; }
+            #videoCurTime, #videoDurTime { font-size: 13px !important; }
+        }
+
+        /* 스마트폰 가로 모드 */
+        @media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+            .menubar { height: 28px; font-size: 13px; }
+            .thumbnail-panel { display: none; }
+            .main-container {
+                height: calc(100vh - 28px - var(--toolbar-h, 46px) - 20px) !important;
+            }
+        }
+        
+        /* 토스트 애니메이션 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* ===== 비디오 래퍼 - viewer-area 내부 절대 위치 ===== */
+        #videoWrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        /* ══════════════════════════════════════════
+           오디오 플레이어
+           ══════════════════════════════════════════ */
+        #audioWrapper {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            z-index: 10;
+            overflow: hidden;
+            user-select: none;
+        }
+        #audioWrapper.active { display: flex; }
+
+        /* 배경 파동 애니메이션 */
+        .audio-bg-wave {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(79,168,255,0.06);
+            animation: audioPulse 3s ease-in-out infinite;
+        }
+        .audio-bg-wave:nth-child(1){ width:300px;height:300px; animation-delay:0s; }
+        .audio-bg-wave:nth-child(2){ width:450px;height:450px; animation-delay:0.6s; }
+        .audio-bg-wave:nth-child(3){ width:600px;height:600px; animation-delay:1.2s; }
+        @keyframes audioPulse {
+            0%,100%{ transform:scale(1);   opacity:0.6; }
+            50%    { transform:scale(1.08);opacity:0.2; }
+        }
+
+        /* 앨범 아트 */
+        .audio-art-wrap {
+            position: relative;
+            width: 180px; height: 180px;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+        #audioArt {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: linear-gradient(135deg,#1a1a3e,#2d2d6e);
+            box-shadow: 0 8px 32px rgba(79,168,255,0.35);
+            border: 3px solid rgba(79,168,255,0.4);
+            transition: transform 0.3s;
+        }
+        #audioWrapper.playing #audioArt {
+            animation: audioSpin 12s linear infinite;
+        }
+        @keyframes audioSpin { to { transform: rotate(360deg); } }
+        .audio-art-note {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 64px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* 곡 정보 */
+        .audio-info { z-index:1; text-align:center; margin-bottom:16px; padding:0 20px; }
+        #audioTitle {
+            color: #fff;
+            font-size: 17px; font-weight: bold;
+            max-width: 320px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+        #audioSubInfo { color: rgba(255,255,255,0.5); font-size: 12px; }
+
+        /* 시각화 바 */
+        #audioVisualizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 36px;
+            z-index: 1;
+            margin-bottom: 16px;
+        }
+        .av-bar {
+            width: 4px;
+            background: linear-gradient(to top, #4fa8ff, #a78bfa);
+            border-radius: 2px;
+            transition: height 0.08s;
+        }
+
+        /* 진행바 */
+        .audio-progress-wrap {
+            z-index: 1;
+            width: 90%;
+            max-width: 380px;
+            margin-bottom: 10px;
+        }
+        #audioTrack {
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+            padding: 8px 0;
+            margin: -8px 0;
+            box-sizing: content-box;
+        }
+        #audioFill {
+            position: absolute;
+            top: 0; left: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #4fa8ff, #a78bfa);
+            border-radius: 3px;
+            width: 0%;
+            pointer-events: none;
+        }
+        #audioThumb {
+            position: absolute;
+            top: 50%; left: 0%;
+            transform: translate(-50%,-50%);
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+        .audio-time-row {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.55);
+            font-size: 11px;
+            margin-top: 4px;
+            padding: 0 2px;
+        }
+
+        /* 메인 컨트롤 */
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1;
+            margin-bottom: 12px;
+        }
+        .ac-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(255,255,255,0.8);
+            font-size: 22px;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.15s, color 0.15s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ac-btn:hover  { background: rgba(255,255,255,0.12); color:#fff; }
+        .ac-btn:active { background: rgba(255,255,255,0.22); }
+        .ac-btn.active { color: #4fa8ff; }
+        #audioPlayBtn { font-size: 30px; width:58px; height:58px;
+            background: rgba(79,168,255,0.25);
+            border: 2px solid rgba(79,168,255,0.5);
+        }
+        #audioPlayBtn:hover { background: rgba(79,168,255,0.4); }
+
+        /* 하단 부가 컨트롤 */
+        .audio-sub-controls {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 1;
+        }
+        .ac-sub-btn {
+            background: none; border: none; cursor: pointer;
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
+            padding: 6px;
+            border-radius: 6px;
+            transition: color 0.15s;
+        }
+        .ac-sub-btn:hover  { color: rgba(255,255,255,0.9); }
+        .ac-sub-btn.active { color: #4fa8ff; }
+        .ac-speed-btn {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.1);
+            border: none; cursor: pointer;
+            padding: 4px 8px; border-radius: 4px;
+            transition: color 0.15s;
+        }
+        .ac-speed-btn:hover { color: #fff; background: rgba(255,255,255,0.2); }
+
+        /* 플레이리스트 */
+        #audioPlaylist {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            max-height: 0;
+            overflow: hidden;
+            background: rgba(0,0,0,0.85);
+            transition: max-height 0.3s ease;
+            z-index: 5;
+        }
+        #audioPlaylist.open { max-height: 240px; overflow-y: auto; }
+        #audioPlaylist::-webkit-scrollbar { width: 4px; }
+        #audioPlaylist::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius:2px; }
+        .ap-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: background 0.15s;
+        }
+        .ap-item:hover { background: rgba(79,168,255,0.15); }
+        .ap-item.active { color: #4fa8ff; background: rgba(79,168,255,0.1); }
+        .ap-num { color: rgba(255,255,255,0.3); font-size:11px; min-width:22px; }
+        .ap-name { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .ap-dur  { color: rgba(255,255,255,0.3); font-size:11px; flex-shrink:0; }
+
+        /* ── 가사 패널 ── */
+        #audioLyricPanel {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 24px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 3;
+        }
+        #audioLyricPanel.visible { opacity: 1; pointer-events: auto; }
+        #lyricScroll {
+            width: 100%;
+            max-width: 480px;
+            max-height: 220px;
+            overflow: hidden;
+            position: relative;
+            mask-image: linear-gradient(transparent 0%, black 18%, black 82%, transparent 100%);
+            -webkit-mask-image: linear-gradient(transparent 0%, black 18%, black 82%, transparent 100%);
+        }
+        #lyricInner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+            padding: 80px 0;
+        }
+        .lyric-line {
+            font-size: 15px;
+            color: rgba(255,255,255,0.38);
+            text-align: center;
+            line-height: 1.55;
+            padding: 3px 8px;
+            border-radius: 6px;
+            transition: color 0.35s, font-size 0.35s, font-weight 0.35s;
+            cursor: pointer;
+            user-select: none;
+            width: 100%;
+        }
+        .lyric-line.active { color: #fff; font-size: 17px; font-weight: bold; }
+        .lyric-line.near   { color: rgba(255,255,255,0.65); }
+        #lyricStatus {
+            font-size: 13px;
+            color: rgba(255,255,255,0.35);
+            text-align: center;
+            padding: 12px;
+            white-space: pre-line;
+        }
+        #audioLyricBar {
+            position: absolute;
+            top: 8px; right: 12px;
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+        .lyric-bar-btn {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+        .lyric-bar-btn:hover  { background: rgba(255,255,255,0.22); color:#fff; }
+        .lyric-bar-btn.active { background: rgba(79,168,255,0.35); color:#4fa8ff; border-color:#4fa8ff; }
+
+
+                /* 중앙 재생버튼 — 하단 진행바로 통합되어 숨김 */
+        .video-play-btn { display: none !important; }
+
+        /* 하단 진행바 */
+        #videoProgressBar {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 52px;
+            padding: 0 10px;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: linear-gradient(transparent, rgba(0,0,0,0.85));
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 25;
+        }
+        #videoOverlay.visible #videoProgressBar {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        /* 진행바 내 재생버튼 크기 조정 */
+        #videoProgressBar #videoPlayBtn {
+            width: 32px; height: 32px;
+            font-size: 13px;
+        }
+        #videoCurTime, #videoDurTime {
+            color: white;
+            font-size: 11px;
+            white-space: nowrap;
+            min-width: 34px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        #videoTrack {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+            padding: 8px 0;
+            margin: -8px 0;
+            box-sizing: content-box;
+        }
+        #videoFill {
+            position: absolute;
+            top: 8px; left: 0;
+            height: 4px;
+            background: #4fa8ff;
+            border-radius: 2px;
+            width: 0%;
+            pointer-events: none;
+        }
+        #videoThumb {
+            position: absolute;
+            top: 50%; left: 0%;
+            transform: translate(-50%, -50%);
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+            pointer-events: none;
+            margin-top: 2px;
+        }
+        /* 볼륨 슬라이더 */
+        #vVolSlider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.3);
+            outline: none;
+        }
+        #vVolSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+        #vVolSlider::-moz-range-thumb {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* 오버레이 bottom - 진행바가 있으므로 여백 불필요 */
+        #videoOverlay {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            bottom: 0;
+            z-index: 20;
+            pointer-events: none; /* 비디오 클릭 통과, 자식버튼은 auto */
+        }
+
+        /* 좌/우 seek 버튼 */
+        .video-seek-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid rgba(255,255,255,0.8);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s, background 0.2s, transform 0.1s;
+            pointer-events: auto;
+        }
+        /* 구 seek-btn 위치 CSS (버튼 제거됨) */
+        /* #videoSeekBackBtn  { left: 10%; } */
+        /* #videoSeekForwardBtn { left: 35%; } */
+        .video-seek-btn:hover  { background: rgba(0,120,215,0.85); }
+        .video-seek-btn:active { transform: translateY(-50%) scale(0.9); }
+        #videoOverlay.visible .video-seek-btn { opacity: 1; }
+
+        /* 우측 세로 컨트롤 바 */
+        #videoControlBar {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 6px;
+            background: rgba(0,0,0,0.55);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        #videoOverlay.visible #videoControlBar {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #videoOverlay.visible #videoControlBar .vctrl-btn,
+        #videoOverlay.visible .video-seek-btn {
+            pointer-events: auto;
+        }
+
+        /* ── 세로 뷰포트 (portrait) — 컨트롤바를 진행바 위에 가로 배치 ── */
+        @media (orientation: portrait) {
+            /* ── 비디오: 컨트롤바 → 진행바 위 가로 배치 ── */
+            #videoControlBar {
+                top: auto;
+                right: auto;
+                left: 0;
+                bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+                width: 100%;
+                transform: none;
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                gap: 6px;
+                padding: 6px 10px;
+                border-radius: 0;
+                border: none;
+                border-top: 1px solid rgba(255,255,255,0.15);
+                background: rgba(0,0,0,0.7);
+            }
+            #videoControlBar::-webkit-scrollbar { display: none; }
+
+            /* 비디오: player 하단 여백 = 진행바 + 컨트롤바 + safe-area */
+            #videoPlayer {
+                max-height: calc(100% - 96px - env(safe-area-inset-bottom, 0px)) !important;
+            }
+            /* vFsPopup 위치 조정 */
+            #vFsPopup {
+                bottom: calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+                right: 10px !important;
+            }
+        }
+
+        /* 컨트롤 바 버튼 공통 — 크기 일원화 32×32 */
+        .vctrl-btn {
+            height: 32px;
+            width: 32px;
+            min-width: 32px;
+            padding: 0;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            transition: background 0.15s;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .vctrl-btn:hover  { background: rgba(255,255,255,0.30); }
+        .vctrl-btn:active { background: rgba(255,255,255,0.45); }
+        .vctrl-btn.active { background: rgba(0,120,215,0.8); border-color: #4fa8ff; }
+        .vctrl-label { font-size: 11px; }
+        #videoWrapper.active {
+            display: flex;
+        }
+
+        /* ── 영상 전체화면 (videoWrapper가 fullscreen 요소) ── */
+        #videoWrapper:fullscreen,
+        #videoWrapper:-webkit-full-screen,
+        #videoWrapper:-moz-full-screen,
+        #videoWrapper:-ms-fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            background: #000 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            overflow: hidden !important;
+        }
+
+        /* 전체화면 공통 videoPlayer 베이스 */
+        #videoWrapper:fullscreen #videoPlayer,
+        #videoWrapper:-webkit-full-screen #videoPlayer,
+        #videoWrapper:-moz-full-screen #videoPlayer,
+        #videoWrapper:-ms-fullscreen #videoPlayer {
+            position: relative !important;
+            top: auto !important; left: auto !important;
+            object-fit: contain !important;
+            background: #000 !important;
+        }
+
+        /* ── 전체화면 가로모드 (fs-landscape 클래스) ── */
+        #videoWrapper.fs-landscape:fullscreen #videoPlayer,
+        #videoWrapper.fs-landscape:-webkit-full-screen #videoPlayer,
+        #videoWrapper.fs-landscape:-moz-full-screen #videoPlayer,
+        #videoWrapper.fs-landscape:-ms-fullscreen #videoPlayer {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: none !important;
+            max-height: none !important;
+            transform: none !important;
+        }
+
+        /* ── 전체화면 세로모드 (fs-portrait 클래스) ── */
+        /* 화면은 가로(100vw x 100vh), 영상 90° 회전 후 width/height swap → 세로 꽉 채움 */
+        #videoWrapper.fs-portrait:fullscreen #videoPlayer,
+        #videoWrapper.fs-portrait:-webkit-full-screen #videoPlayer,
+        #videoWrapper.fs-portrait:-moz-full-screen #videoPlayer,
+        #videoWrapper.fs-portrait:-ms-fullscreen #videoPlayer {
+            width: 100vh !important;
+            height: 100vw !important;
+            max-width: none !important;
+            max-height: none !important;
+            transform: rotate(90deg) !important;
+            transform-origin: center center !important;
+        }
+
+        /* ── 전체화면 270도(역세로)모드 (fs-portrait-270 클래스) ── */
+        #videoWrapper.fs-portrait-270:fullscreen #videoPlayer,
+        #videoWrapper.fs-portrait-270:-webkit-full-screen #videoPlayer,
+        #videoWrapper.fs-portrait-270:-moz-full-screen #videoPlayer,
+        #videoWrapper.fs-portrait-270:-ms-fullscreen #videoPlayer {
+            width: 100vh !important;
+            height: 100vw !important;
+            max-width: none !important;
+            max-height: none !important;
+            transform: rotate(270deg) !important;
+            transform-origin: center center !important;
+        }
+
+        #videoPlayer {
+            display: block;
+            object-fit: contain;
+            background: #000;
+        }
+
+        /* ════════════════════════════════════════════════
+           비디오 변환 툴바 & 패널 스타일
+           ════════════════════════════════════════════════ */
+
+        /* 비디오 툴바 - 기존 tool-group 스타일 그대로 활용 */
+        #videoToolbarGroups {
+            display: none;
+            align-items: center;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            gap: 0;
+            height: 100%;
+        }
+        #videoToolbarGroups.active {
+            display: flex !important;
+        }
+        #imageToolbarGroups.hidden {
+            display: none !important;
+        }
+
+        /* 툴바 그룹 레이블 (소형 텍스트) */
+        .tool-group-label {
+            font-size: 9px;
+            color: #666;
+            text-align: center;
+            width: 100%;
+            padding: 2px 0 1px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        /* 품질 버튼 활성화 상태 */
+        .tool-btn.vc-quality-active {
+            background: rgba(0, 120, 215, 0.25);
+            border-bottom: 2px solid #4fa8ff;
+        }
+
+        /* ── 비디오 변환 패널 (#videoConvertPanel) ── */
+        #videoConvertPanel {
+            position: fixed;
+            top: auto;
+            right: 0;
+            /* toolbar(60px) + menubar(24px) 아래에서 시작 */
+            bottom: 22px; /* statusbar 높이 */
+            width: auto;
+            min-width: 240px;
+            max-width: min(300px, 40vw);
+            background: #1a1a2e;
+            border-left: 1px solid #333;
+            display: none;
+            flex-direction: column;
+            z-index: 500;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+        }
+        /* top은 JS에서 toolbar 아래로 동적 계산 */
+        #videoConvertPanel.open {
+            display: flex;
+        }
+        .vcp-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px 8px;
+            background: #16213e;
+            border-bottom: 1px solid #333;
+            font-size: 13px;
+            font-weight: bold;
+            color: #7ecfff;
+            flex-shrink: 0;
+        }
+        .vcp-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0 4px;
+            line-height: 1;
+        }
+        .vcp-close:hover { color: #fff; }
+        .vcp-body {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+        .vcp-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .vcp-section-title {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #2a2a4a;
+            padding-bottom: 4px;
+        }
+        .vcp-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .vcp-label {
+            font-size: 12px;
+            color: #ccc;
+            min-width: 56px;
+            flex-shrink: 0;
+        }
+        .vcp-select, .vcp-input {
+            flex: 1;
+            background: #0d0d1f;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #eee;
+            font-size: 12px;
+            padding: 4px 6px;
+            outline: none;
+        }
+        .vcp-select:focus, .vcp-input:focus { border-color: #4fa8ff; }
+        .vcp-time-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .vcp-time-input {
+            width: 72px;
+            background: #0d0d1f;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #eee;
+            font-size: 12px;
+            padding: 4px 6px;
+            text-align: center;
+            outline: none;
+        }
+        .vcp-time-input:focus { border-color: #4fa8ff; }
+        .vcp-info {
+            background: #0d0d1f;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 11px;
+            color: #888;
+            line-height: 1.6;
+        }
+        .vcp-info .vcp-info-val { color: #ccc; font-weight: bold; }
+        .vcp-warn {
+            background: rgba(230, 81, 0, 0.15);
+            border: 1px solid rgba(230, 81, 0, 0.4);
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 11px;
+            color: #ffb74d;
+            display: none;
+        }
+        .vcp-warn.show { display: block; }
+        .vcp-start-btn {
+            width: 100%;
+            padding: 10px;
+            background: #0078d7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-top: 4px;
+        }
+        .vcp-start-btn:hover { background: #005fa3; }
+        .vcp-start-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
+        /* 진행 표시 */
+        .vcp-progress-wrap {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .vcp-progress-wrap.show { display: flex; }
+        .vcp-progress-bar-bg {
+            height: 8px;
+            background: #222;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .vcp-progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0078d7, #4fa8ff);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .vcp-progress-text {
+            font-size: 11px;
+            color: #aaa;
+            text-align: center;
+        }
+        .vcp-done-msg {
+            display: none;
+            background: rgba(46,125,50,0.2);
+            border: 1px solid rgba(46,125,50,0.5);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 12px;
+            color: #81c784;
+            text-align: center;
+        }
+        .vcp-done-msg.show { display: block; }
+        /* FFmpeg 로딩 오버레이 */
+        #vcLoadingOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 14px;
+            color: #eee;
+            font-size: 14px;
+        }
+        #vcLoadingOverlay.show { display: flex; }
+        .vc-spinner {
+            width: 40px; height: 40px;
+            border: 3px solid #333;
+            border-top-color: #4fa8ff;
+            border-radius: 50%;
+            animation: vcSpin 0.8s linear infinite;
+        }
+        @keyframes vcSpin { to { transform: rotate(360deg); } }
+    
