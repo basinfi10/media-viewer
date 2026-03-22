@@ -280,3 +280,96 @@ export function seekForward(): void {
   vp.currentTime = Math.min(vp.duration, vp.currentTime + 5);
   showToast('⏩ 5초 앞으로');
 }
+
+// ── 비디오 반복 모드 ─────────────────────────────────────────
+export function toggleRepeatOne(): void {
+  app.repeatOne = !app.repeatOne;
+  if (app.repeatOne) app.repeatAll = false;
+  const btn = document.getElementById('vRepeatOneBtn');
+  if (btn) btn.style.background = app.repeatOne ? 'rgba(0,120,215,0.8)' : '';
+  showToast(app.repeatOne ? '🔂 한 영상 반복' : '반복 끔');
+}
+
+export function toggleRepeatAll(): void {
+  app.repeatAll = !app.repeatAll;
+  if (app.repeatAll) app.repeatOne = false;
+  const btn = document.getElementById('vRepeatAllBtn');
+  if (btn) btn.style.background = app.repeatAll ? 'rgba(0,120,215,0.8)' : '';
+  showToast(app.repeatAll ? '🔁 전체 연속 재생' : '반복 끔');
+}
+
+export function toggleOrientation(): void {
+  const current = app.videoOrientation;
+  setVideoOrientation(current === 'landscape' ? 'portrait' : 'landscape');
+}
+
+export function setVideoOrientation(mode: 'landscape' | 'portrait'): void {
+  const vp = document.getElementById('videoPlayer') as HTMLVideoElement | null;
+  const vw = document.getElementById('videoWrapper');
+  if (!vp || !vw) return;
+  app.videoOrientation = mode;
+  if (mode === 'portrait') {
+    app.videoRotation = 90;
+    vw.classList.add('portrait-mode');
+    vp.style.transform = 'rotate(90deg)';
+    vp.style.maxWidth  = '75vh';
+    vp.style.maxHeight = '80vw';
+    showToast('⬛ 세로 재생 모드');
+  } else {
+    app.videoRotation = 0;
+    vw.classList.remove('portrait-mode');
+    vp.style.transform = 'rotate(0deg)';
+    vp.style.maxWidth  = '100%';
+    vp.style.maxHeight = '100%';
+    showToast('⬜ 가로 재생 모드');
+  }
+  const angleStr = `${app.videoRotation}deg`;
+  vp.style.setProperty('--rotation-angle', angleStr);
+  vw.style.setProperty('--rotation-angle', angleStr);
+}
+
+export function toggleVideoActualSize(): void {
+  const vp = document.getElementById('videoPlayer') as HTMLVideoElement | null;
+  if (!vp) return;
+  const isActual = vp.style.objectFit === 'fill';
+  vp.style.objectFit = isActual ? 'contain' : 'fill';
+  showToast(isActual ? '📐 비율 유지' : '📐 원본 크기');
+}
+
+export function rotateVideo(degrees: number): void {
+  const vp = document.getElementById('videoPlayer') as HTMLVideoElement | null;
+  const vw = document.getElementById('videoWrapper');
+  if (!vp || !vw) return;
+  app.videoRotation = (app.videoRotation + degrees) % 360;
+  const norm = ((app.videoRotation % 360) + 360) % 360;
+  const angleStr = `${app.videoRotation}deg`;
+  vp.style.setProperty('--rotation-angle', angleStr);
+  vw.style.setProperty('--rotation-angle', angleStr);
+  vp.style.transform = `rotate(${app.videoRotation}deg)`;
+  if (norm === 90 || norm === 270) {
+    vw.classList.add('portrait-mode');
+    app.videoOrientation = 'portrait';
+  } else {
+    vw.classList.remove('portrait-mode');
+    app.videoOrientation = 'landscape';
+  }
+  showToast(`${degrees > 0 ? '⟳' : '⟲'} 회전 (${app.videoRotation}°)`);
+}
+
+// ── 비디오 오버레이 표시 ──────────────────────────────────────
+export function setupVideoOverlay(): void {
+  const vw = document.getElementById('videoWrapper');
+  const vo = document.getElementById('videoOverlay');
+  if (!vw || !vo || (vw as HTMLElement & {_overlayBound?: boolean})._overlayBound) return;
+  (vw as HTMLElement & {_overlayBound?: boolean})._overlayBound = true;
+
+  let overlayTimer: number | null = null;
+  const showOverlay = () => {
+    vo.classList.add('visible');
+    if (overlayTimer) clearTimeout(overlayTimer);
+    overlayTimer = window.setTimeout(() => vo.classList.remove('visible'), 3000);
+  };
+  vw.addEventListener('mousemove',  showOverlay);
+  vw.addEventListener('touchstart', showOverlay, { passive: true });
+  vw.addEventListener('touchmove',  showOverlay, { passive: true });
+}

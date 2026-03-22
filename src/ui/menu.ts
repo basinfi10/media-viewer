@@ -1,6 +1,6 @@
 import { app } from '../store';
 import { showToast } from '../utils';
-import { startCropWithRatio } from '../modules/canvas';
+import { startCropWithRatio, renderCanvas } from '../modules/canvas';
 
 export function showCropMenu(): void {
   const modal = document.createElement('div');
@@ -132,4 +132,31 @@ export function showShortcuts(): void {
       </div>
     </div>`;
   document.body.appendChild(modal);
+}
+
+export function applyResizeFromDialog(btn: HTMLElement): void {
+  const modal  = btn.closest('.modal-overlay') as HTMLElement | null;
+  if (!modal) return;
+  const wInput = modal.querySelector('#resizeW') as HTMLInputElement | null;
+  const hInput = modal.querySelector('#resizeH') as HTMLInputElement | null;
+  if (!wInput || !hInput) return;
+
+  const newW = parseInt(wInput.value);
+  const newH = parseInt(hInput.value);
+  if (!newW || !newH || newW < 1 || newH < 1) { showToast('올바른 크기를 입력해주세요.'); return; }
+
+  const tmp = document.createElement('canvas');
+  tmp.width = newW; tmp.height = newH;
+  const tc = tmp.getContext('2d')!;
+  if (app.currentImage) tc.drawImage(app.currentImage, 0, 0, newW, newH);
+  const img = new Image();
+  img.onload = () => {
+    app.currentImage = img;
+    app.canvas.width  = newW;
+    app.canvas.height = newH;
+    renderCanvas();
+    showToast(`📐 ${newW}×${newH}px 적용됨`);
+  };
+  img.src = tmp.toDataURL();
+  modal.remove();
 }

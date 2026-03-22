@@ -10,6 +10,12 @@ import { showCropMenu, showAbout, showShortcuts } from './ui/menu';
 import { setupKeyboard } from './modules/keyboard';
 import { showToast } from './utils';
 import {
+  toggleRepeatOne, toggleRepeatAll, toggleOrientation,
+  setVideoOrientation, toggleVideoActualSize, rotateVideo, setupVideoOverlay,
+} from './modules/player';
+import { vcOpenPanel, vcClosePanel, vcOpenPanelKeep, vcSetResolution, vcSetQuality, vcStartConvert, vcToggleAutoOrient, mountVideoConvertPanel } from './modules/videoConvert';
+import { applyResizeFromDialog } from './ui/menu';
+import {
   loadAudio, audioTogglePlay, audioPrev, audioNext,
   audioToggleRepeat, audioToggleShuffle, audioSetVolume,
   audioToggleMute, audioSetSpeed, audioCycleSpeed, audioTogglePlaylist,
@@ -67,6 +73,14 @@ Object.assign(window, {
   audioSetSpeed, audioCycleSpeed, audioTogglePlaylist,
   audioToggleLyric, audioLoadLrcFile,
 
+  // 비디오 제어
+  toggleRepeatOne, toggleRepeatAll, toggleOrientation,
+  setVideoOrientation, toggleVideoActualSize, rotateVideo,
+  // 비디오 변환
+  vcOpenPanel, vcClosePanel, vcOpenPanelKeep,
+  vcSetResolution, vcSetQuality, vcStartConvert, vcToggleAutoOrient,
+  // 크기 조정
+  applyResizeFromDialog,
   // 메뉴
   showAbout, showShortcuts,
   showToast,
@@ -98,6 +112,10 @@ function init(): void {
 
   // 드래그 앤 드롭
   setupDragDrop();
+  // 비디오 변환 패널 마운트
+  mountVideoConvertPanel();
+  // 비디오 오버레이
+  setupVideoOverlay();
 
   // 비디오 진행바 시크
   setupVideoSeek();
