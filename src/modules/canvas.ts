@@ -214,6 +214,11 @@ let history: HistoryEntry[] = [];
 let historyIdx = -1;
 const MAX_HISTORY = 20;
 
+export function resetHistory(): void {
+  history    = [];
+  historyIdx = -1;
+}
+
 export function saveHistory(): void {
   const dataUrl = app.canvas.toDataURL('image/png');
   // 필터 상태를 깊은 복사로 저장

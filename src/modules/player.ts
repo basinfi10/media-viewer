@@ -1,7 +1,7 @@
-import { app } from '../store';
+import { app, defaultFilters } from '../store';
 import { showToast } from '../utils';
 import { showImageToolbar, showVideoToolbar, showAudioToolbar } from '../ui/toolbar';
-import { renderCanvas } from './canvas';
+import { renderCanvas, fitToScreen, saveHistory, resetHistory } from './canvas';
 import { loadAudio } from './audio';
 
 // ── 미디어 로드 진입점 (타입에 따라 분기) ────────────────────
@@ -49,10 +49,12 @@ export function loadImage(index: number): void {
 
   // 캔버스에 이미지 그리기
   if (!data.img) return;
-  app.currentImage = data.img;
-  app.originalImage = data.img;
-  app.zoom = 1;
-  app.pan  = { x: 0, y: 0 };
+  app.currentImage   = data.img.cloneNode() as HTMLImageElement;
+  app.originalImage  = data.img.cloneNode() as HTMLImageElement;
+  app.zoom     = 1;
+  app.pan      = { x: 0, y: 0 };
+  app.rotation = 0;
+  app.filters  = defaultFilters();
   app.canvas.style.display = 'block';
 
   // 캔버스 크기 = 이미지 크기
@@ -65,9 +67,24 @@ export function loadImage(index: number): void {
     if (el) el.style.display = 'block';
   });
 
+  // 슬라이더 UI 초기화
+  const sliderReset: Array<[string, string, string]> = [
+    ['brightness', '0', '0'], ['contrast', '0', '0'],
+    ['saturation', '0', '0'], ['hue',       '0', '0°'],
+    ['sharpness',  '0', '0'],
+  ];
+  sliderReset.forEach(([id, val, label]) => {
+    const el = document.getElementById(id) as HTMLInputElement | null;
+    const vl = document.getElementById(`${id}Value`);
+    if (el) el.value = val;
+    if (vl) vl.textContent = label;
+  });
+
+  fitToScreen();
   renderCanvas();
   updateStatus();
-  app.currentVideo = null;
+  resetHistory();
+  saveHistory();
 }
 
 // ── 비디오 로드 ───────────────────────────────────────────────

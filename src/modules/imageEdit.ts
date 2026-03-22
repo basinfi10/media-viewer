@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { app, defaultFilters } from '../store';
 import { showToast } from '../utils';
-import { renderCanvas, saveHistory } from './canvas';
+import { renderCanvas, saveHistory, fitToScreen } from './canvas';
 
 export function toggleImagePanel() {
             const panel = document.getElementById('imagePanel');
@@ -494,14 +494,96 @@ export function sharpenImage() {
             saveHistory();
         }
 
+// ── 필터/상태 전체 초기화 (내부 헬퍼) ─────────────────────────
+function resetStateLocal(): void {
+    app.zoom = 1;
+    app.pan  = { x: 0, y: 0 };
+    app.rotation = 0;
+    app.filters = defaultFilters();
+    const sliders: Array<[string, string, string]> = [
+        ['brightness', '0', '0'],
+        ['contrast',   '0', '0'],
+        ['saturation', '0', '0'],
+        ['hue',        '0', '0°'],
+        ['sharpness',  '0', '0'],
+    ];
+    sliders.forEach(([id, val, label]) => {
+        const el = document.getElementById(id) as HTMLInputElement | null;
+        const vl = document.getElementById(`${id}Value`);
+        if (el) el.value = val;
+        if (vl) vl.textContent = label;
+    });
+}
+
 export function resetToOriginal() {
-            if (!app.originalImage) return;
-            app.currentImage = app.originalImage.cloneNode();
-            app.images[app.currentIndex].img = app.currentImage.cloneNode();
-            resetState();
-            renderCanvas();
-            saveHistory();
-        }
+    if (!app.originalImage) return;
+    app.currentImage = (app.originalImage as HTMLImageElement).cloneNode() as HTMLImageElement;
+    if (app.currentIndex !== null && app.images[app.currentIndex]) {
+        app.images[app.currentIndex].img = (app.currentImage as HTMLImageElement).cloneNode() as HTMLImageElement;
+    }
+    resetStateLocal();
+    renderCanvas();
+    saveHistory();
+}
+
+// ── 자동 보정 함수들 ──────────────────────────────────────────
+export function autoLevel() {
+    if (!app.currentImage) { alert('이미지를 먼저 열어주세요.'); return; }
+    app.filters.brightness = 10;
+    app.filters.contrast   = 15;
+    (document.getElementById('brightness') as HTMLInputElement).value = '10';
+    (document.getElementById('brightnessValue') as HTMLElement).textContent = '10';
+    (document.getElementById('contrast') as HTMLInputElement).value = '15';
+    (document.getElementById('contrastValue') as HTMLElement).textContent = '15';
+    renderCanvas();
+    saveHistory();
+}
+
+export function backlightCorrection() {
+    if (!app.currentImage) { alert('이미지를 먼저 열어주세요.'); return; }
+    app.filters.brightness = 25;
+    app.filters.contrast   = -10;
+    (document.getElementById('brightness') as HTMLInputElement).value = '25';
+    (document.getElementById('brightnessValue') as HTMLElement).textContent = '25';
+    (document.getElementById('contrast') as HTMLInputElement).value = '-10';
+    (document.getElementById('contrastValue') as HTMLElement).textContent = '-10';
+    renderCanvas();
+    saveHistory();
+}
+
+export function autoColor() {
+    if (!app.currentImage) { alert('이미지를 먼저 열어주세요.'); return; }
+    app.filters.saturation = 20;
+    app.filters.contrast   = 10;
+    (document.getElementById('saturation') as HTMLInputElement).value = '20';
+    (document.getElementById('saturationValue') as HTMLElement).textContent = '20';
+    (document.getElementById('contrast') as HTMLInputElement).value = '10';
+    (document.getElementById('contrastValue') as HTMLElement).textContent = '10';
+    renderCanvas();
+    saveHistory();
+}
+
+export function reduceNoise() {
+    if (!app.currentImage) { alert('이미지를 먼저 열어주세요.'); return; }
+    app.filters.sharpness = 0;
+    app.filters.contrast  = -5;
+    (document.getElementById('sharpness') as HTMLInputElement).value = '0';
+    (document.getElementById('sharpnessValue') as HTMLElement).textContent = '0';
+    (document.getElementById('contrast') as HTMLInputElement).value = '-5';
+    (document.getElementById('contrastValue') as HTMLElement).textContent = '-5';
+    renderCanvas();
+    saveHistory();
+}
+
+export function resetEditFilters() {
+    if (!app.currentImage) return;
+    app.filters.rotateAngle = 0;
+    const rotateEl = document.getElementById('rotateAngle') as HTMLInputElement | null;
+    const rotateValEl = document.getElementById('rotateAngleValue');
+    if (rotateEl) rotateEl.value = '0';
+    if (rotateValEl) rotateValEl.textContent = '0°';
+    renderCanvas();
+}
 
 export function applyEditResize() {
             if (!app.currentImage) {
@@ -544,7 +626,7 @@ export function applyEditResize() {
                 heightInput.value = height;
                 
                 // 화면 업데이트
-                resetState();
+                resetStateLocal();
                 fitToScreen();
                 renderCanvas();
                 updateStatus();

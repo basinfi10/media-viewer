@@ -30,6 +30,7 @@ import {
   resetToOriginal, applyEditResize, quickResizeEdit,
   showCanvasSizeDialog, updateCanvasSize, setCanvasAlign,
   applyResize, updateImageSizeDisplay,
+  autoLevel, autoColor, backlightCorrection, reduceNoise, resetEditFilters,
 } from './modules/imageEdit';
 import {
   showCaptureMenu, showAIPrompt, sendAIPrompt,
@@ -115,6 +116,7 @@ Object.assign(window, {
   resetToOriginal, applyEditResize, quickResizeEdit,
   showCanvasSizeDialog, updateCanvasSize, setCanvasAlign,
   applyResize, updateImageSizeDisplay,
+  autoLevel, autoColor, backlightCorrection, reduceNoise, resetEditFilters,
   // 캡처/AI/설정
   showCaptureMenu, showAIPrompt, sendAIPrompt,
   aiUpscale, aiRemoveBackground, aiEnhance, aiColorize, aiObjectRemove,
