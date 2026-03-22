@@ -1,5 +1,6 @@
 import { app, _fsGuard } from '../store';
 import { showToast } from '../utils';
+import { fitToScreen, renderCanvas } from './canvas';
 
 // ── 공통 fullscreen 진입/해제 ─────────────────────────────────
 function enterFullscreen(el: Element): void {
@@ -49,13 +50,18 @@ export function toggleFullscreen(): void {
 
 export function toggleAppFullscreen(): void { toggleFullscreen(); }
 
-// ── 이미지 캔버스 전체화면 ────────────────────────────────────
+// ── 이미지 전체화면 (documentElement 기준 — 화면 꽉 채움) ───
 export function toggleImageFullscreen(): void {
-  const canvas = document.getElementById('mainCanvas');
-  if (!canvas) return;
   const fsEl = getFullscreenElement();
-  if (fsEl === canvas) exitFullscreen();
-  else enterFullscreen(canvas);
+  if (fsEl) {
+    exitFullscreen();
+  } else {
+    enterFullscreen(document.documentElement);
+    // 전체화면 진입 후 이미지 비율 맞춤 (약간의 지연으로 크기 확정 후 호출)
+    setTimeout(() => {
+      if (app.currentImage) fitToScreen();
+    }, 100);
+  }
 }
 
 // ── 비디오 전체화면 (videoWrapper 기준 — 창 없는 진짜 FS) ────
@@ -179,7 +185,11 @@ export function _onFullscreenChange(): void {
   if (appBtn) appBtn.innerHTML = fsEl ? '✕' : '&#x26F6;';
   if (imgBtn) {
     const icon = imgBtn.querySelector('.tool-icon');
-    if (icon) icon.textContent = (canvas && fsEl === canvas) ? '✕' : '⛶';
+    if (icon) icon.textContent = fsEl ? '✕' : '⛶';
+  }
+  // 이미지 모드: 전체화면 진입/해제 시 화면 맞춤
+  if (app.currentImage && !app.currentVideo) {
+    setTimeout(() => fitToScreen(), 150);
   }
 }
 

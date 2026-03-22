@@ -37,6 +37,7 @@ import {
   aiUpscale, aiRemoveBackground, aiEnhance, aiColorize, aiObjectRemove,
   showSettings, saveSettings, saveImageAs, printImage,
   showProgressModal, startSlideshow,
+  captureFullScreen, captureWindow, captureArea,
 } from './modules/misc';
 import {
   loadAudio, audioTogglePlay, audioPrev, audioNext,
@@ -122,6 +123,7 @@ Object.assign(window, {
   aiUpscale, aiRemoveBackground, aiEnhance, aiColorize, aiObjectRemove,
   showSettings, saveSettings, saveImageAs, printImage,
   showProgressModal, startSlideshow,
+  captureFullScreen, captureWindow, captureArea,
   // 메뉴
   showAbout, showShortcuts,
   showToast,

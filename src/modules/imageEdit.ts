@@ -117,7 +117,7 @@ export function showFilterMenu() {
                         </div>
                         <hr style="margin: 16px 0; border: none; border-top: 1px solid #e0e0e0;">
                         <button class="btn-small" style="width: 100%; background: #dc3545; color: white;" 
-                            onclick="resetToOriginal(); this.closest('.modal-overlay').remove();">
+                            onclick="resetToOriginal()">
                             원본 복원
                         </button>
                     </div>

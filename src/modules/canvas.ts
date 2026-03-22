@@ -8,6 +8,13 @@ export function renderCanvas(): void {
   const { canvas, ctx, currentImage, zoom, pan, rotation, filters } = app;
   if (!ctx || !currentImage) return;
 
+  // 캔버스 크기를 viewerArea에 맞춤 (중앙 정렬 + 전체화면 대응)
+  const viewerArea = document.getElementById('viewerArea');
+  if (viewerArea && viewerArea.clientWidth > 0) {
+    canvas.width  = viewerArea.clientWidth;
+    canvas.height = viewerArea.clientHeight;
+  }
+
   const cw = canvas.width;
   const ch = canvas.height;
   ctx.clearRect(0, 0, cw, ch);
@@ -68,13 +75,14 @@ export function actualSize(): void { setZoom(1); app.pan = { x: 0, y: 0 }; rende
 
 export function fitToScreen(): void {
   if (!app.currentImage || !app.canvas) return;
-  const container = document.querySelector('.image-container') as HTMLElement | null;
-  if (!container) return;
-  const cw = container.clientWidth  || app.canvas.width;
-  const ch = container.clientHeight || app.canvas.height;
+  const viewerArea = document.getElementById('viewerArea');
+  const cw = viewerArea?.clientWidth  || app.canvas.width;
+  const ch = viewerArea?.clientHeight || app.canvas.height;
   const scaleX = cw / app.currentImage.naturalWidth;
   const scaleY = ch / app.currentImage.naturalHeight;
-  setZoom(Math.min(scaleX, scaleY, 1));
+  app.zoom = Math.max(0.05, Math.min(scaleX, scaleY, 1));
+  const el = document.getElementById('zoomLevel');
+  if (el) el.textContent = `${Math.round(app.zoom * 100)}%`;
   app.pan = { x: 0, y: 0 };
   renderCanvas();
 }

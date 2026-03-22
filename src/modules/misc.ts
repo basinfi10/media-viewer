@@ -527,3 +527,76 @@ export function startSlideshow() {
             alert('슬라이드쇼 기능 구현 중입니다.\n곧 업데이트 예정입니다.');
         }
 
+// ── 화면 캡처 기능 ────────────────────────────────────────────
+async function captureScreen(filename: string): Promise<void> {
+  try {
+    const stream = await (navigator.mediaDevices as MediaDevices & {
+      getDisplayMedia: (opts: object) => Promise<MediaStream>;
+    }).getDisplayMedia({ video: { cursor: 'always' }, audio: false });
+
+    const video = document.createElement('video');
+    video.srcObject = stream;
+
+    video.onloadedmetadata = () => {
+      video.play();
+      setTimeout(() => {
+        const tmp = document.createElement('canvas');
+        tmp.width  = video.videoWidth;
+        tmp.height = video.videoHeight;
+        tmp.getContext('2d')!.drawImage(video, 0, 0);
+        stream.getTracks().forEach(t => t.stop());
+
+        const img = new Image();
+        img.onload = () => {
+          tmp.toBlob(blob => {
+            if (!blob) return;
+            const file = new File([blob], filename, { type: 'image/png' });
+            const data = {
+              file, name: file.name, img,
+              width: img.width, height: img.height,
+              size: blob.size, format: 'image/png',
+              type: 'image', modified: false,
+            };
+            app.images.push(data as typeof app.images[0]);
+            // 썸네일 생성 & 이미지 로드 (window 경유)
+            const w = window as Window & Record<string, unknown>;
+            if (typeof w.createThumbnail === 'function') w.createThumbnail(app.images.length - 1);
+            loadMedia(app.images.length - 1);
+            // 모달 닫기
+            document.querySelector('.modal-overlay')?.remove();
+            document.getElementById('dropZone')?.classList.add('hidden');
+            document.querySelector('.image-container')?.classList.remove('hidden');
+            window.focus();
+            showToast(`📸 캡처 완료: ${file.name}`);
+          });
+        };
+        img.src = tmp.toDataURL();
+      }, 500);
+    };
+  } catch (err: unknown) {
+    const e = err as DOMException;
+    if (e.name === 'NotAllowedError' && !e.message.includes('permissions policy')) return; // 사용자 취소
+    let msg = '화면 캡처를 시작할 수 없습니다.\n\n';
+    if (e.name === 'NotAllowedError') {
+      msg += '⚠️ 브라우저 보안 정책으로 차단되었습니다.\n\nHTML 파일을 로컬에서 실행하거나\nOS 단축키를 사용하세요:\n• Windows: Win + Shift + S\n• Mac: Cmd + Shift + 4';
+    } else if (e.name === 'NotSupportedError') {
+      msg += '⚠️ 이 브라우저는 화면 캡처를 지원하지 않습니다.\n(Chrome 72+ / Edge 79+ / Firefox 66+ 필요)';
+    } else {
+      msg += `오류: ${e.name}\n${e.message}`;
+    }
+    alert(msg);
+  }
+}
+
+export async function captureFullScreen(): Promise<void> {
+  await captureScreen(`screen_${Date.now()}.png`);
+}
+
+export async function captureWindow(): Promise<void> {
+  await captureScreen(`window_${Date.now()}.png`);
+}
+
+export function captureArea(): void {
+  document.querySelector('.modal-overlay')?.remove();
+  alert('📸 영역 선택 캡처 안내\n\n브라우저 제한으로 직접 구현이 어렵습니다.\n\n대안:\n1. Windows: Win + Shift + S (캡처 도구)\n2. Mac: Cmd + Shift + 4\n3. 전체/창 캡처 후 자르기 기능 사용');
+}

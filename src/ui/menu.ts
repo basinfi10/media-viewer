@@ -84,7 +84,7 @@ export function showAbout(): void {
       </div>
       <div class="modal-body" style="text-align:center;padding:20px;">
         <div style="font-size:48px;margin-bottom:12px;">🎬</div>
-        <div style="font-size:18px;font-weight:bold;margin-bottom:8px;">미디어 뷰어 v3.34</div>
+        <div style="font-size:18px;font-weight:bold;margin-bottom:8px;">미디어 뷰어 v3.35.1</div>
         <div style="color:#666;font-size:13px;line-height:1.6;">
           이미지 · 영상 · 음악 통합 뷰어<br>
           TypeScript + Vite<br><br>
