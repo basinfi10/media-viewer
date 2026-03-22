@@ -23,8 +23,7 @@ import {
 import { audioToggleLyric, audioLoadLrcFile } from './modules/lyric';
 import { startCropWithRatio } from './modules/canvas';
 
-// ── HTML 렌더링 ───────────────────────────────────────────────
-document.getElementById('app')!.innerHTML = getAppHTML();
+// HTML은 index.html에 직접 포함됨
 
 // ── 전역 함수 노출 (HTML onclick에서 호출) ────────────────────
 Object.assign(window, {
