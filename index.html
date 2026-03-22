@@ -13,108 +13,286 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
 </head>
 <body tabindex="-1">
-<!-- 메뉴바 -->
 <div class="menubar">
-  <div class="menu-item" onclick="document.getElementById('fileMenu').classList.toggle('active')">
-    파일
-    <div class="dropdown-menu" id="fileMenu">
-      <div class="dropdown-item" onclick="openFiles()">📁 열기 <span class="shortcut">Ctrl+O</span></div>
-      <div class="dropdown-item" onclick="saveImage()">💾 저장 <span class="shortcut">Ctrl+S</span></div>
-      <hr class="dropdown-divider">
-      <div class="dropdown-item" onclick="showAbout()">ℹ️ 정보</div>
+        <div class="menu-item">
+            파일
+            <div class="dropdown-menu">
+                <div class="dropdown-item" onclick="openFiles()">
+                    <span>이미지 열기</span>
+                    <span class="shortcut">Ctrl+O</span>
+                </div>
+                <div class="dropdown-item" onclick="openFolder()">
+                    <span>폴더 열기</span>
+                    <span class="shortcut">Ctrl+Shift+O</span>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="saveImage()">
+                    <span>저장</span>
+                    <span class="shortcut">Ctrl+S</span>
+                </div>
+                <div class="dropdown-item" onclick="saveImageAs()">
+                    <span>다른 이름으로 저장</span>
+                    <span class="shortcut">Ctrl+Shift+S</span>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="printImage()">
+                    <span>인쇄</span>
+                    <span class="shortcut">Ctrl+P</span>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="window.close()">
+                    <span>종료</span>
+                    <span class="shortcut">Alt+F4</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-item">
+            편집
+            <div class="dropdown-menu">
+                <div class="dropdown-item" onclick="undo()">
+                    <span>실행 취소</span>
+                    <span class="shortcut">Ctrl+Z</span>
+                </div>
+                <div class="dropdown-item" onclick="redo()">
+                    <span>다시 실행</span>
+                    <span class="shortcut">Ctrl+Y</span>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="showResizeDialog()">
+                    <span>이미지 크기 조절</span>
+                </div>
+                <div class="dropdown-item" onclick="showCanvasSizeDialog()">
+                    <span>캔버스 크기 확대</span>
+                </div>
+                <div class="dropdown-item" onclick="toggleCropMode()">
+                    <span>자르기</span>
+                    <span class="shortcut">Ctrl+X</span>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="rotate(-90)">
+                    <span>왼쪽으로 회전</span>
+                </div>
+                <div class="dropdown-item" onclick="rotate(90)">
+                    <span>오른쪽으로 회전</span>
+                </div>
+                <div class="dropdown-item" onclick="flipHorizontal()">
+                    <span>좌우 뒤집기</span>
+                </div>
+                <div class="dropdown-item" onclick="flipVertical()">
+                    <span>상하 뒤집기</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-item">
+            보기
+            <div class="dropdown-menu">
+                <div class="dropdown-item" onclick="toggleThumbnails()">
+                    <span>썸네일 패널</span>
+                    <span class="shortcut">F9</span>
+                </div>
+                <div class="dropdown-item" onclick="toggleFullscreen()">
+                    <span>전체화면</span>
+                    <span class="shortcut">F11</span>
+                </div>
+                <div class="dropdown-item" onclick="startSlideshow()">
+                    <span>슬라이드쇼</span>
+                    <span class="shortcut">F5</span>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="zoomIn()">
+                    <span>확대</span>
+                    <span class="shortcut">+</span>
+                </div>
+                <div class="dropdown-item" onclick="zoomOut()">
+                    <span>축소</span>
+                    <span class="shortcut">-</span>
+                </div>
+                <div class="dropdown-item" onclick="fitToScreen()">
+                    <span>화면에 맞추기</span>
+                    <span class="shortcut">*</span>
+                </div>
+                <div class="dropdown-item" onclick="actualSize()">
+                    <span>실제 크기</span>
+                    <span class="shortcut">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-item">
+            도구
+            <div class="dropdown-menu">
+                <div class="dropdown-item" onclick="showCaptureMenu()">
+                    <span>화면 캡처</span>
+                    <span class="shortcut">Print Screen</span>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="openBatchEditor()">
+                    <span>일괄 편집</span>
+                    <span class="shortcut">Ctrl+B</span>
+                </div>
+                <div class="dropdown-item" onclick="toggleCropMode()">
+                    <span>자르기</span>
+                    <span class="shortcut">Ctrl+X</span>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="showSettings()">
+                    <span>환경설정</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-item">
+            AI 기능
+            <div class="dropdown-menu">
+                <div class="dropdown-item" onclick="showAIPrompt()">
+                    <span>AI 프롬프트</span>
+                    <span class="shortcut">Ctrl+Shift+A</span>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="aiRemoveBackground()">
+                    <span>배경 제거</span>
+                </div>
+                <div class="dropdown-item" onclick="aiObjectRemove()">
+                    <span>객체 제거 (드래그 선택)</span>
+                </div>
+                <div class="dropdown-item" onclick="aiEnhance()">
+                    <span>AI 화질 개선</span>
+                </div>
+                <div class="dropdown-item" onclick="aiColorize()">
+                    <span>흑백 컬러화</span>
+                </div>
+                <div class="dropdown-item" onclick="aiUpscale()">
+                    <span>AI 이미지 확대 (2x)</span>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="manageAIKeys()">
+                    <span>API 키 관리</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-item">
+            도움말
+            <div class="dropdown-menu">
+                <div class="dropdown-item" onclick="showShortcuts()">
+                    <span>단축키 안내</span>
+                    <span class="shortcut">F1</span>
+                </div>
+                <div class="dropdown-item" onclick="showAbout()">
+                    <span>정보</span>
+                </div>
+            </div>
+        </div>
+        <!-- 오른쪽 끝 전체화면 버튼 -->
+        <button id="appFsBtn" onclick="toggleAppFullscreen()" title="창 전체화면 (F11)"
+            style="margin-left:auto; border:none; background:transparent; cursor:pointer;
+                   padding:0 10px; height:24px; font-size:16px; color:#333;
+                   display:flex; align-items:center; flex-shrink:0;"
+            >&#x26F6;</button>
     </div>
-  </div>
-  <div class="menu-item" onclick="document.getElementById('editMenu').classList.toggle('active')">
-    편집
-    <div class="dropdown-menu" id="editMenu">
-      <div class="dropdown-item" onclick="undo()">↶ 실행 취소 <span class="shortcut">Ctrl+Z</span></div>
-      <div class="dropdown-item" onclick="redo()">↷ 다시 실행 <span class="shortcut">Ctrl+Y</span></div>
-      <hr class="dropdown-divider">
-      <div class="dropdown-item" onclick="flipHorizontal()">⟷ 좌우 뒤집기</div>
-      <div class="dropdown-item" onclick="flipVertical()">⟱ 상하 뒤집기</div>
-      <div class="dropdown-item" onclick="rotate(-90)">⟲ 왼쪽 회전</div>
-      <div class="dropdown-item" onclick="rotate(90)">⟳ 오른쪽 회전</div>
-      <hr class="dropdown-divider">
-      <div class="dropdown-item" onclick="showCropMenu()">✂️ 자르기</div>
-      <div class="dropdown-item" onclick="resetFilters()">🔄 필터 초기화</div>
-    </div>
-  </div>
-  <div class="menu-item" onclick="document.getElementById('viewMenu').classList.toggle('active')">
-    보기
-    <div class="dropdown-menu" id="viewMenu">
-      <div class="dropdown-item" onclick="toggleThumbnails()">🖼 썸네일 <span class="shortcut">F9</span></div>
-      <div class="dropdown-item" onclick="toggleImageView()">🔍 이미지 전체보기 <span class="shortcut">I</span></div>
-      <hr class="dropdown-divider">
-      <div class="dropdown-item" onclick="toggleFullscreen()">⛶ 창 전체화면 <span class="shortcut">F11</span></div>
-    </div>
-  </div>
-  <div class="menu-item" onclick="document.getElementById('helpMenu').classList.toggle('active')">
-    도움말
-    <div class="dropdown-menu" id="helpMenu">
-      <div class="dropdown-item" onclick="showShortcuts()">⌨️ 단축키</div>
-      <div class="dropdown-item" onclick="showAbout()">ℹ️ 정보</div>
-    </div>
-  </div>
-  <button id="appFsBtn" onclick="toggleAppFullscreen()" title="창 전체화면 (F11)"
-    style="margin-left:auto;border:none;background:transparent;cursor:pointer;padding:0 10px;height:24px;font-size:16px;color:#333;display:flex;align-items:center;flex-shrink:0;">
-    &#x26F6;
-  </button>
-</div>
+    <div class="toolbar">
 
 <!-- 툴바 -->
 <div class="toolbar">
-  <!-- 이미지 툴바 -->
-  <div id="imageToolbarGroups" style="display:contents;">
-    <div class="tool-group">
-      <button class="tool-btn" onclick="openFiles()" title="이미지 열기 (Ctrl+O)">
-        <div class="tool-icon">📁</div><div class="tool-label">열기</div>
-      </button>
-      <button class="tool-btn" onclick="saveImage()" title="저장 (Ctrl+S)">
-        <div class="tool-icon">💾</div><div class="tool-label">저장</div>
-      </button>
-    </div>
-    <div class="tool-group">
-      <button class="tool-btn" onclick="undo()" title="실행 취소 (Ctrl+Z)">
-        <div class="tool-icon">↶</div><div class="tool-label">실행취소</div>
-      </button>
-      <button class="tool-btn" onclick="redo()" title="다시 실행 (Ctrl+Y)">
-        <div class="tool-icon">↷</div><div class="tool-label">다시실행</div>
-      </button>
-    </div>
-    <div class="tool-group">
-      <button class="tool-btn" onclick="rotate(-90)" title="왼쪽 회전">
-        <div class="tool-icon">⟲</div><div class="tool-label">좌회전</div>
-      </button>
-      <button class="tool-btn" onclick="rotate(90)" title="오른쪽 회전">
-        <div class="tool-icon">⟳</div><div class="tool-label">우회전</div>
-      </button>
-      <button class="tool-btn" onclick="flipHorizontal()" title="좌우 뒤집기">
-        <div class="tool-icon">⟷</div><div class="tool-label">좌우뒤집기</div>
-      </button>
-      <button class="tool-btn" onclick="flipVertical()" title="상하 뒤집기">
-        <div class="tool-icon">⟱</div><div class="tool-label">상하뒤집기</div>
-      </button>
-    </div>
-    <div class="tool-group">
-      <button class="tool-btn" onclick="showCropMenu()" title="자르기">
-        <div class="tool-icon">✂️</div><div class="tool-label">자르기</div>
-      </button>
-      <button class="tool-btn" onclick="toggleImageView()" title="전체보기 (I)">
-        <div class="tool-icon">🔍</div><div class="tool-label">전체보기</div>
-      </button>
-      <button class="tool-btn" id="imgFsBtn" onclick="toggleImageFullscreen()" title="이미지 전체화면">
-        <div class="tool-icon">⛶</div><div class="tool-label">전체화면</div>
-      </button>
-    </div>
-    <div class="tool-group">
-      <button class="tool-btn" onclick="prevImage()" title="이전 (←)">
-        <div class="tool-icon">⟨</div><div class="tool-label">이전</div>
-      </button>
-      <button class="tool-btn" onclick="nextImage()" title="다음 (→)">
-        <div class="tool-icon">⟩</div><div class="tool-label">다음</div>
-      </button>
-    </div>
-  </div>
+<div id="imageToolbarGroups" style="display:contents;">
+            <div class="tool-group">
+                <button class="tool-btn" onclick="openFiles()" title="이미지 열기 (Ctrl+O)">
+                    <div class="tool-icon">📁</div>
+                    <div class="tool-label">열기</div>
+                </button>
+                <button class="tool-btn" onclick="saveImage()" title="저장 (Ctrl+S)">
+                    <div class="tool-icon">💾</div>
+                    <div class="tool-label">저장</div>
+                </button>
+                <button class="tool-btn" onclick="printImage()" title="인쇄 (Ctrl+P)">
+                    <div class="tool-icon">🖨️</div>
+                    <div class="tool-label">인쇄</div>
+                </button>
+            </div>
+            
+            <div class="tool-group">
+                <button class="tool-btn" onclick="undo()" title="실행 취소 (Ctrl+Z)">
+                    <div class="tool-icon">↶</div>
+                    <div class="tool-label">실행취소</div>
+                </button>
+                <button class="tool-btn" onclick="redo()" title="다시 실행 (Ctrl+Y)">
+                    <div class="tool-icon">↷</div>
+                    <div class="tool-label">다시실행</div>
+                </button>
+            </div>
+            
+            <div class="tool-group">
+                <button class="tool-btn" onclick="rotate(-90)" title="왼쪽 회전">
+                    <div class="tool-icon">⟲</div>
+                    <div class="tool-label">좌회전</div>
+                </button>
+                <button class="tool-btn" onclick="rotate(90)" title="오른쪽 회전">
+                    <div class="tool-icon">⟳</div>
+                    <div class="tool-label">우회전</div>
+                </button>
+                <button class="tool-btn" onclick="flipHorizontal()" title="좌우 뒤집기">
+                    <div class="tool-icon">⟷</div>
+                    <div class="tool-label">좌우뒤집기</div>
+                </button>
+                <button class="tool-btn" onclick="flipVertical()" title="상하 뒤집기">
+                    <div class="tool-icon">⟱</div>
+                    <div class="tool-label">상하뒤집기</div>
+                </button>
+            </div>
+            
+            <div class="tool-group">
+                <button class="tool-btn" id="cropTool" onclick="showCropMenu()" title="자르기 (Ctrl+X)">
+                    <div class="tool-icon">✂️</div>
+                    <div class="tool-label">자르기</div>
+                </button>
+                <button class="tool-btn" id="imageTool" onclick="toggleImagePanel()" title="이미지 조정">
+                    <div class="tool-icon">🖼️</div>
+                    <div class="tool-label">이미지</div>
+                </button>
+                <button class="tool-btn" id="editTool" onclick="toggleEditPanel()" title="편집">
+                    <div class="tool-icon">📐</div>
+                    <div class="tool-label">편집</div>
+                </button>
+                <button class="tool-btn" onclick="showFilterMenu()" title="필터 효과">
+                    <div class="tool-icon">🎭</div>
+                    <div class="tool-label">필터</div>
+                </button>
+                <button class="tool-btn" onclick="showAIPrompt()" title="AI 프롬프트 (Ctrl+Shift+A)">
+                    <div class="tool-icon">🤖</div>
+                    <div class="tool-label">AI프롬프트</div>
+                </button>
+                <button class="tool-btn" id="batchEditToolBtn" onclick="showBatchEditDialog()" title="일괄 편집 (2개 이상 선택 필요)" style="opacity: 0.3;">
+                    <div class="tool-icon">📋</div>
+                    <div class="tool-label">일괄편집</div>
+                </button>
+            </div>
+            
+            <div class="tool-group">
+                <button class="tool-btn" onclick="prevImage()" title="이전 이미지">
+                    <div class="tool-icon">⟨</div>
+                    <div class="tool-label">이전</div>
+                </button>
+                <button class="tool-btn" onclick="nextImage()" title="다음 이미지">
+                    <div class="tool-icon">⟩</div>
+                    <div class="tool-label">다음</div>
+                </button>
+            </div>
+            
+            <div class="tool-group">
+                <button class="tool-btn" onclick="showCaptureMenu()" title="화면 캡처">
+                    <div class="tool-icon">📸</div>
+                    <div class="tool-label">화면캡처</div>
+                </button>
+                <button class="tool-btn" id="imgFsBtn" onclick="toggleImageFullscreen()" title="전체화면 (메뉴 없이 이미지만)">
+                    <div class="tool-icon">⛶</div>
+                    <div class="tool-label">전체화면</div>
+                </button>
+            </div>
+        </div><!-- /#imageToolbarGroups -->
+
+        <!-- ══ 비디오 툴바 그룹 (비디오 선택 시 표시) ══ -->
 
   <!-- 비디오 툴바 -->
   <div id="videoToolbarGroups" style="display:none;">
@@ -188,7 +366,7 @@
   <!-- 썸네일 패널 -->
   <div class="thumbnail-panel" id="thumbnailPanel">
     <div class="panel-header">
-      <span>미디어 목록</span>
+      <span>이미지 목록<span id="selectedCount" onclick="showDeleteSelectionMenu()" style="margin-left:8px;color:#28a745;font-weight:bold;display:none;cursor:pointer;"></span><span onclick="showDeleteSelectionMenu()" style="margin-left:8px;cursor:pointer;opacity:0.6;font-size:11px;" title="선택 메뉴">☰</span></span>
       <span class="panel-toggle" onclick="toggleThumbnails()" title="패널 접기/펼치기 (F9)">◀</span>
     </div>
     <div class="panel-tab" onclick="toggleThumbnails()">미디어 목록</div>
@@ -290,6 +468,346 @@
       </div>
     </div>
 
+    <!-- 이미지 조정 패널 -->
+<!-- 편집 패널 -->
+        <!-- 이미지 패널 (새로 추가) -->
+        <div class="edit-panel" id="imagePanel">
+            <div class="panel-header">
+                <span>이미지 조정</span>
+                <span class="panel-toggle" onclick="toggleImagePanel()" title="패널 닫기">✕</span>
+            </div>
+            
+            <div class="edit-section">
+                <div class="edit-section-title">밝기 및 색상</div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>밝기</span>
+                        <span class="control-value" id="brightnessValue">0</span>
+                    </div>
+                    <input type="range" min="-100" max="100" value="0" id="brightness" oninput="updateFilters()">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>대비</span>
+                        <span class="control-value" id="contrastValue">0</span>
+                    </div>
+                    <input type="range" min="-100" max="100" value="0" id="contrast" oninput="updateFilters()">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>채도</span>
+                        <span class="control-value" id="saturationValue">0</span>
+                    </div>
+                    <input type="range" min="-100" max="100" value="0" id="saturation" oninput="updateFilters()">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>색조</span>
+                        <span class="control-value" id="hueValue">0°</span>
+                    </div>
+                    <input type="range" min="-180" max="180" value="0" id="hue" oninput="updateFilters()">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>선명도</span>
+                        <span class="control-value" id="sharpnessValue">0</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="0" id="sharpness" oninput="updateFilters()">
+                </div>
+            </div>
+            
+            <div class="edit-section">
+                <div class="edit-section-title">자동 보정</div>
+                
+                <button class="btn-small" style="width: 100%; margin-bottom: 6px;" onclick="autoLevel()">
+                    자동 레벨
+                </button>
+                <button class="btn-small" style="width: 100%; margin-bottom: 6px;" onclick="autoColor()">
+                    자동 색상
+                </button>
+                <button class="btn-small" style="width: 100%; margin-bottom: 6px;" onclick="backlightCorrection()">
+                    역광 보정
+                </button>
+                <button class="btn-small" style="width: 100%; margin-bottom: 6px;" onclick="reduceNoise()">
+                    노이즈 감소
+                </button>
+                <button class="btn-small" style="width: 100%; margin-bottom: 6px;" onclick="sharpenImage()">
+                    선명하게
+                </button>
+            </div>
+            
+            <div class="edit-section">
+                <div class="edit-section-title">필름 느낌</div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                    <button class="btn-small" onclick="applyFilmEffect('vintage')" style="font-size: 10px; padding: 6px 4px;">빈티지</button>
+                    <button class="btn-small" onclick="applyFilmEffect('classic')" style="font-size: 10px; padding: 6px 4px;">클래식</button>
+                    <button class="btn-small" onclick="applyFilmEffect('warm')" style="font-size: 10px; padding: 6px 4px;">따뜻함</button>
+                    <button class="btn-small" onclick="applyFilmEffect('cool')" style="font-size: 10px; padding: 6px 4px;">차가움</button>
+                    <button class="btn-small" onclick="applyFilmEffect('faded')" style="font-size: 10px; padding: 6px 4px;">페이드</button>
+                    <button class="btn-small" onclick="applyFilmEffect('retro')" style="font-size: 10px; padding: 6px 4px;">레트로</button>
+                    <button class="btn-small" onclick="applyFilmEffect('noir')" style="font-size: 10px; padding: 6px 4px;">누아르</button>
+                    <button class="btn-small" onclick="applyFilmEffect('pastel')" style="font-size: 10px; padding: 6px 4px;">파스텔</button>
+                    <button class="btn-small" onclick="applyFilmEffect('vivid')" style="font-size: 10px; padding: 6px 4px;">선명</button>
+                    <button class="btn-small" onclick="applyFilmEffect('soft')" style="font-size: 10px; padding: 6px 4px;">부드러움</button>
+                </div>
+            </div>
+            
+            <div class="edit-section">
+                <button class="btn-small" style="width: 100%;" onclick="resetFilters()">
+                    모두 초기화
+                </button>
+            </div>
+        </div>
+
+        <!-- ══ 비디오 변환 패널 ══ -->
+        <div id="videoConvertPanel">
+            <div class="vcp-header">
+                <span id="vcPanelTitle">🎬 비디오 변환</span>
+                <button class="vcp-close" onclick="vcClosePanel()" title="닫기">✕</button>
+            </div>
+            <div class="vcp-body">
+                <!-- 파일 정보 -->
+                <div class="vcp-info">
+                    <div>파일: <span class="vcp-info-val" id="vcFileName">-</span></div>
+                    <div>크기: <span class="vcp-info-val" id="vcFileSize">-</span></div>
+                    <div>해상도: <span class="vcp-info-val" id="vcFileRes">-</span></div>
+                    <div>길이: <span class="vcp-info-val" id="vcFileDur">-</span></div>
+                </div>
+                <!-- 대용량 경고 -->
+                <div class="vcp-warn" id="vcSizeWarn">
+                    ⚠️ 파일이 큽니다 (500MB+). 브라우저 메모리 한계로 실패할 수 있습니다.
+                </div>
+                <!-- ── 정보 전용 섹션 (info 모드) ── -->
+                <div id="vcInfoSection" style="display:none;">
+                    <div class="vcp-section">
+                        <div class="vcp-section-title">📐 영상 정보</div>
+                        <div id="vcInfoContent" style="color:#ccc;font-size:12px;line-height:1.9;"></div>
+                    </div>
+                </div>
+                <!-- ── 변환 설정 본문 ── -->
+                <div id="vcConvertBody">
+                <!-- 출력 설정 -->
+                <div class="vcp-section">
+                    <div class="vcp-section-title">출력 설정</div>
+                    <div class="vcp-row">
+                        <span class="vcp-label">출력 형식</span>
+                        <select class="vcp-select" id="vcFormat" onchange="vcOnFormatChange()">
+                            <option value="mp4">MP4 (H.264)</option>
+                            <option value="webm">WebM (VP9)</option>
+                            <option value="mp3">MP3 (오디오만)</option>
+                            <option value="gif">GIF</option>
+                        </select>
+                    </div>
+                    <div class="vcp-row" id="vcResRow">
+                        <span class="vcp-label">해상도</span>
+                        <select class="vcp-select" id="vcResolution" onchange="vcOnResChange()">
+                            <option value="original">원본 유지</option>
+                            <option value="1920x1080">1080p (1920×1080)</option>
+                            <option value="1280x720">720p (1280×720)</option>
+                            <option value="854x480">480p (854×480)</option>
+                            <option value="custom">직접 입력</option>
+                        </select>
+                    </div>
+                    <div class="vcp-row" id="vcCustomResRow" style="display:none;">
+                        <span class="vcp-label">크기</span>
+                        <input class="vcp-input" id="vcCustomW" type="number" placeholder="가로" min="1" style="width:58px;flex:none;">
+                        <span style="color:#888;font-size:12px;padding:0 2px;">×</span>
+                        <input class="vcp-input" id="vcCustomH" type="number" placeholder="세로" min="1" style="width:58px;flex:none;">
+                    </div>
+                    <div class="vcp-row" id="vcQualityRow">
+                        <span class="vcp-label">품질</span>
+                        <select class="vcp-select" id="vcQuality">
+                            <option value="18">고품질 (CRF 18)</option>
+                            <option value="23" selected>중간 (CRF 23)</option>
+                            <option value="28">저용량 (CRF 28)</option>
+                        </select>
+                    </div>
+                    <div class="vcp-row" id="vcAudioRow">
+                        <span class="vcp-label">오디오</span>
+                        <select class="vcp-select" id="vcAudio">
+                            <option value="keep">유지</option>
+                            <option value="remove">제거 (무음)</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- 구간 추출 -->
+                <div class="vcp-section" id="vcTrimSection">
+                    <div class="vcp-section-title">구간 추출 (비우면 전체)</div>
+                    <div class="vcp-row">
+                        <span class="vcp-label">시작</span>
+                        <input class="vcp-time-input" id="vcTrimStart" type="text" placeholder="0:00">
+                    </div>
+                    <div class="vcp-row">
+                        <span class="vcp-label">끝</span>
+                        <input class="vcp-time-input" id="vcTrimEnd" type="text" placeholder="전체">
+                    </div>
+                </div>
+                <!-- 회전 저장 옵션 -->
+                <div class="vcp-section" id="vcRotateSection" style="display:none;">
+                    <div class="vcp-section-title">회전 방향</div>
+                    <div class="vcp-row">
+                        <span class="vcp-label">방향</span>
+                        <select class="vcp-select" id="vcRotateDir">
+                            <option value="90">시계방향 90°</option>
+                            <option value="-90">반시계방향 90°</option>
+                            <option value="180">180°</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- 변환 시작 버튼 -->
+                <button class="vcp-start-btn" id="vcStartBtn" onclick="vcStartConvert()">▶ 변환 시작</button>
+                <!-- 진행 표시 -->
+                <div class="vcp-progress-wrap" id="vcProgressWrap">
+                    <div class="vcp-progress-bar-bg">
+                        <div class="vcp-progress-bar-fill" id="vcProgressFill"></div>
+                    </div>
+                    <div class="vcp-progress-text" id="vcProgressText">준비 중...</div>
+                </div>
+                <!-- 완료 메시지 -->
+                <div class="vcp-done-msg" id="vcDoneMsg">✅ 변환 완료! 파일이 다운로드되었습니다.</div>
+                </div><!-- /#vcConvertBody -->
+            </div><!-- /.vcp-body -->
+        </div><!-- /#videoConvertPanel -->
+
+        <!-- FFmpeg 로딩 오버레이 -->
+        <div id="vcLoadingOverlay">
+            <div class="vc-spinner"></div>
+            <div id="vcLoadingText">FFmpeg 엔진 로딩 중...</div>
+        </div>
+
+        <!-- 편집 패널 -->
+    <!-- 편집 패널 -->
+<!-- 편집 패널 -->
+        <div class="edit-panel" id="editPanel">
+            <div class="panel-header">
+                <span>편집</span>
+                <span class="panel-toggle" onclick="toggleEditPanel()" title="패널 닫기">✕</span>
+            </div>
+
+            <div class="edit-section">
+                <div class="edit-section-title">크기 조정</div>
+                
+                <div class="control-group">
+                    <div class="control-label">너비 (px)</div>
+                    <input type="number" id="editResizeWidth" min="1" placeholder="자동" 
+                           oninput="handleResizeWidthChange()">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">높이 (px)</div>
+                    <input type="number" id="editResizeHeight" min="1" placeholder="자동"
+                           oninput="handleResizeHeightChange()">
+                </div>
+
+                <div class="control-group">
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; cursor: pointer;">
+                        <input type="checkbox" id="editMaintainRatio" checked>
+                        비율 유지
+                    </label>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label" style="margin-bottom: 6px;">빠른 선택</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+                        <button class="btn-small" onclick="quickResizeEdit(0.5)" style="padding: 4px; font-size: 10px;">50%</button>
+                        <button class="btn-small" onclick="quickResizeEdit(0.75)" style="padding: 4px; font-size: 10px;">75%</button>
+                        <button class="btn-small" onclick="quickResizeEdit(1.5)" style="padding: 4px; font-size: 10px;">150%</button>
+                        <button class="btn-small" onclick="quickResizeEdit(2)" style="padding: 4px; font-size: 10px;">200%</button>
+                        <button class="btn-small" onclick="quickResizeEdit(3)" style="padding: 4px; font-size: 10px;">300%</button>
+                        <button class="btn-small" onclick="quickResizeEdit(0.25)" style="padding: 4px; font-size: 10px;">25%</button>
+                    </div>
+                </div>
+
+                <button class="btn-small" style="width: 100%; margin-top: 8px;" onclick="applyEditResize()">
+                    크기 적용
+                </button>
+            </div>
+
+            <div class="edit-section">
+                <div class="edit-section-title">수평 조절</div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>회전 각도</span>
+                        <span class="control-value" id="rotateAngleValue">0°</span>
+                    </div>
+                    <input type="range" min="-45" max="45" value="0" step="0.1" id="rotateAngle" oninput="updateRotation()">
+                </div>
+            </div>
+            
+            <div class="edit-section">
+                <div class="edit-section-title">수직 조절</div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>기울기 각도</span>
+                        <span class="control-value" id="verticalAngleValue">0°</span>
+                    </div>
+                    <input type="range" min="-45" max="45" value="0" step="0.1" id="verticalAngle" oninput="updateVerticalAngle()">
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <button class="btn-small" style="width: 100%;" onclick="resetEditFilters()">
+                    편집 초기화
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상태바 -->
+    <div class="statusbar">
+        <div class="status-item" id="statusIndex">0/0</div>
+        <div class="status-separator"></div>
+        <div class="status-item" id="statusDimensions">-</div>
+        <div class="status-separator"></div>
+        <div class="status-item" id="statusSize">-</div>
+        <div class="status-separator"></div>
+        <div class="status-item" id="statusFormat">-</div>
+    </div>
+
+    <!-- 파일 입력 (숨김) -->
+    <input type="file" id="fileInput" multiple accept="image/*,video/*,audio/*,.zip,.mp3,.flac,.aac,.wav,.ogg,.m4a,.opus,.wma,.aiff,.ape" style="display: none;">
+
+    <!-- 전체 이미지 뷰 오버레이 -->
+    <div class="image-view-overlay" id="imageViewOverlay">
+        <div class="image-view-container" id="imageViewContainer">
+            <img id="imageViewImg" class="image-view-img" src="" alt="">
+            <div class="image-view-nav prev" onclick="imageViewPrev()">⟨</div>
+            <div class="image-view-nav next" onclick="imageViewNext()">⟩</div>
+            <div class="image-view-close" onclick="toggleImageView()">✕</div>
+            <div class="image-view-info" id="imageViewInfo">1 / 1</div>
+            <!-- 썸네일 스트립 (위쪽) -->
+            <div id="imageViewThumb"></div>
+            <!-- 미니 툴바 (아래쪽) -->
+            <div id="imageViewToolbar">
+                <button class="iv-tool-btn" onclick="ivRotateLeft()">
+                    <span class="iv-tool-icon">⟲</span>
+                    <span class="iv-tool-label">좌회전</span>
+                </button>
+                <button class="iv-tool-btn" onclick="ivRotateRight()">
+                    <span class="iv-tool-icon">⟳</span>
+                    <span class="iv-tool-label">우회전</span>
+                </button>
+                <button class="iv-tool-btn" onclick="ivCrop()">
+                    <span class="iv-tool-icon">✂️</span>
+                    <span class="iv-tool-label">자르기</span>
+                </button>
+                <button class="iv-tool-btn" onclick="ivToggleThumb()">
+                    <span class="iv-tool-icon">🖼️</span>
+                    <span class="iv-tool-label">목록</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 비디오 변환: MediaRecorder + Canvas + WebAudio (FFmpeg 불필요) -->
     <!-- 이미지 캔버스 -->
     <div class="image-container hidden">
       <canvas id="mainCanvas"></canvas>
@@ -306,16 +824,15 @@
   </div>
 </div>
 
-<!-- 상태바 -->
-<div class="statusbar">
-  <span id="statusIndex">0/0</span>
-  <span style="margin:0 8px;color:#999;">|</span>
-  <span id="statusName"></span>
-  <span style="margin:0 8px;color:#999;">|</span>
-  <span id="statusSize"></span>
-  <span style="margin:0 8px;color:#999;">|</span>
-  <span id="statusInfo"></span>
-</div>
+    <div class="statusbar">
+        <div class="status-item" id="statusIndex">0/0</div>
+        <div class="status-separator"></div>
+        <div class="status-item" id="statusDimensions">-</div>
+        <div class="status-separator"></div>
+        <div class="status-item" id="statusSize">-</div>
+        <div class="status-separator"></div>
+        <div class="status-item" id="statusFormat">-</div>
+    </div>
 
 <!-- 이미지 전체보기 오버레이 -->
 <div class="image-view-overlay" id="imageViewOverlay">

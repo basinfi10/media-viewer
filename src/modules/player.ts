@@ -209,12 +209,21 @@ export function updateStatus(): void {
   if (app.currentIndex === null || !app.images[app.currentIndex]) return;
   const data = app.images[app.currentIndex];
   const idx  = document.getElementById('statusIndex');
-  const name = document.getElementById('statusName');
+  const dim  = document.getElementById('statusDimensions');
   const size = document.getElementById('statusSize');
+  const fmt  = document.getElementById('statusFormat');
+  // 이전 호환성
+  const name = document.getElementById('statusName');
   const info = document.getElementById('statusInfo');
+
   if (idx)  idx.textContent  = `${app.currentIndex + 1}/${app.images.length}`;
   if (name) name.textContent = data.name;
-  if (size) size.textContent = `${(data.size / 1024).toFixed(0)}KB`;
+  if (size) size.textContent = data.size > 1024*1024
+    ? `${(data.size/1024/1024).toFixed(1)}MB`
+    : `${(data.size/1024).toFixed(0)}KB`;
+  if (fmt)  fmt.textContent  = data.format || '';
+  if (dim && data.width && data.height)
+    dim.textContent = `${data.width} × ${data.height}`;
   if (info && data.width && data.height)
     info.textContent = `${data.width}×${data.height}`;
 }

@@ -16,6 +16,26 @@ import {
 import { vcOpenPanel, vcClosePanel, vcOpenPanelKeep, vcSetResolution, vcSetQuality, vcStartConvert, vcToggleAutoOrient, mountVideoConvertPanel } from './modules/videoConvert';
 import { applyResizeFromDialog } from './ui/menu';
 import {
+  toggleImageSelection, selectAllImages, deselectAllImages,
+  deleteSelectedImages, showDeleteSelectionMenu,
+  showBatchEditDialog, updateBatchEditButton, updateThumbnailSelection,
+} from './modules/selection';
+import {
+  toggleImagePanel, toggleEditPanel,
+  showFilterMenu, applyPresetFilter, applyFilmEffect,
+  updateFilters, applyFilters, updateInputFields,
+  applyConvolutionFilter, sharpenImage,
+  resetToOriginal, applyEditResize, quickResizeEdit,
+  showCanvasSizeDialog, updateCanvasSize, setCanvasAlign,
+  applyResize, updateImageSizeDisplay,
+} from './modules/imageEdit';
+import {
+  showCaptureMenu, showAIPrompt, sendAIPrompt,
+  aiUpscale, aiRemoveBackground, aiEnhance, aiColorize, aiObjectRemove,
+  showSettings, saveSettings, saveImageAs, printImage,
+  showProgressModal, startSlideshow,
+} from './modules/misc';
+import {
   loadAudio, audioTogglePlay, audioPrev, audioNext,
   audioToggleRepeat, audioToggleShuffle, audioSetVolume,
   audioToggleMute, audioSetSpeed, audioCycleSpeed, audioTogglePlaylist,
@@ -80,6 +100,23 @@ Object.assign(window, {
   vcSetResolution, vcSetQuality, vcStartConvert, vcToggleAutoOrient,
   // 크기 조정
   applyResizeFromDialog,
+  // 선택/삭제/일괄편집
+  toggleImageSelection, selectAllImages, deselectAllImages,
+  deleteSelectedImages, showDeleteSelectionMenu,
+  showBatchEditDialog, updateBatchEditButton, updateThumbnailSelection,
+  // 이미지 편집/필터
+  toggleImagePanel, toggleEditPanel,
+  showFilterMenu, applyPresetFilter, applyFilmEffect,
+  updateFilters, applyFilters, updateInputFields,
+  applyConvolutionFilter, sharpenImage,
+  resetToOriginal, applyEditResize, quickResizeEdit,
+  showCanvasSizeDialog, updateCanvasSize, setCanvasAlign,
+  applyResize, updateImageSizeDisplay,
+  // 캡처/AI/설정
+  showCaptureMenu, showAIPrompt, sendAIPrompt,
+  aiUpscale, aiRemoveBackground, aiEnhance, aiColorize, aiObjectRemove,
+  showSettings, saveSettings, saveImageAs, printImage,
+  showProgressModal, startSlideshow,
   // 메뉴
   showAbout, showShortcuts,
   showToast,

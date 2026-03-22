@@ -1,5 +1,6 @@
 import { app } from '../store';
 import { loadMedia } from '../modules/player';
+import { toggleImageSelection, showDeleteSelectionMenu } from '../modules/selection';
 
 export function createThumbnailEl(index: number): void {
   const data = app.images[index];
@@ -40,7 +41,15 @@ export function createThumbnailEl(index: number): void {
 
   div.appendChild(del);
   div.appendChild(img);
-  div.onclick = () => loadMedia(index);
+  // 단순 클릭 → 로드, Ctrl+클릭 → 선택 토글
+  div.onclick = (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      toggleImageSelection(index);
+    } else {
+      loadMedia(index);
+    }
+  };
   list.appendChild(div);
 }
 
