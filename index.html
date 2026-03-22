@@ -13,7 +13,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
 </head>
 <body tabindex="-1">
-<div class="menubar">
+    <!-- 메뉴바 -->
+    <div class="menubar">
         <div class="menu-item">
             파일
             <div class="dropdown-menu">
@@ -193,10 +194,8 @@
             >&#x26F6;</button>
     </div>
     <div class="toolbar">
-
-<!-- 툴바 -->
-<div class="toolbar">
-<div id="imageToolbarGroups" style="display:contents;">
+        <!-- ══ 이미지 툴바 그룹 (이미지 선택 시 표시) ══ -->
+        <div id="imageToolbarGroups" style="display:contents;">
             <div class="tool-group">
                 <button class="tool-btn" onclick="openFiles()" title="이미지 열기 (Ctrl+O)">
                     <div class="tool-icon">📁</div>
@@ -293,183 +292,383 @@
         </div><!-- /#imageToolbarGroups -->
 
         <!-- ══ 비디오 툴바 그룹 (비디오 선택 시 표시) ══ -->
+        <div id="videoToolbarGroups" style="display:none;">
 
-  <!-- 비디오 툴바 -->
-  <div id="videoToolbarGroups" style="display:none;">
-    <div class="tool-group">
-      <button class="tool-btn" onclick="openFiles()"><div class="tool-icon">📁</div><div class="tool-label">열기</div></button>
-    </div>
-    <div class="tool-group">
-      <div class="tool-group-label">포맷변환</div>
-      <button class="tool-btn" onclick="vcOpenPanel('mp4')"><div class="tool-icon">🎞</div><div class="tool-label">MP4</div></button>
-      <button class="tool-btn" onclick="vcOpenPanel('webm')"><div class="tool-icon">🌐</div><div class="tool-label">WebM</div></button>
-      <button class="tool-btn" onclick="vcOpenPanel('mp3')"><div class="tool-icon">🎵</div><div class="tool-label">MP3추출</div></button>
-      <button class="tool-btn" onclick="vcOpenPanel('gif')"><div class="tool-icon">📦</div><div class="tool-label">GIF</div></button>
-    </div>
-    <div class="tool-group">
-      <div class="tool-group-label">해상도</div>
-      <button class="tool-btn" onclick="vcSetResolution('1920x1080');vcOpenPanelKeep('mp4')"><div class="tool-icon">📺</div><div class="tool-label">1080p</div></button>
-      <button class="tool-btn" onclick="vcSetResolution('1280x720');vcOpenPanelKeep('mp4')"><div class="tool-icon">🖥</div><div class="tool-label">720p</div></button>
-      <button class="tool-btn" onclick="vcSetResolution('854x480');vcOpenPanelKeep('mp4')"><div class="tool-icon">📱</div><div class="tool-label">480p</div></button>
-    </div>
-    <div class="tool-group">
-      <div class="tool-group-label">편집</div>
-      <button class="tool-btn" onclick="vcOpenPanel('trim')"><div class="tool-icon">✂️</div><div class="tool-label">구간추출</div></button>
-      <button class="tool-btn" onclick="vcOpenPanel('mute')"><div class="tool-icon">🔇</div><div class="tool-label">음소거</div></button>
-      <button class="tool-btn" onclick="vcOpenPanel('rotate')"><div class="tool-icon">🔄</div><div class="tool-label">회전저장</div></button>
-    </div>
-    <div class="tool-group">
-      <button class="tool-btn" onclick="prevImage()"><div class="tool-icon">⟨</div><div class="tool-label">이전</div></button>
-      <button class="tool-btn" onclick="nextImage()"><div class="tool-icon">⟩</div><div class="tool-label">다음</div></button>
-    </div>
-  </div>
+            <!-- 그룹1: 파일 -->
+            <div class="tool-group">
+                <button class="tool-btn" onclick="openFiles()" title="파일 열기">
+                    <div class="tool-icon">📁</div>
+                    <div class="tool-label">열기</div>
+                </button>
+                <button class="tool-btn" onclick="vcDownloadOriginal()" title="원본 다운로드">
+                    <div class="tool-icon">💾</div>
+                    <div class="tool-label">저장</div>
+                </button>
+            </div>
 
-  <!-- 오디오 툴바 -->
-  <div id="audioToolbarGroups" style="display:none;">
-    <div class="tool-group">
-      <button class="tool-btn" onclick="openFiles()"><div class="tool-icon">📁</div><div class="tool-label">열기</div></button>
-    </div>
-    <div class="tool-group">
-      <div class="tool-group-label">재생</div>
-      <button class="tool-btn" onclick="audioPrev()"><div class="tool-icon">⏮</div><div class="tool-label">이전</div></button>
-      <button class="tool-btn" id="tbAudioPlayBtn" onclick="audioTogglePlay()"><div class="tool-icon">▶</div><div class="tool-label">재생</div></button>
-      <button class="tool-btn" onclick="audioNext()"><div class="tool-icon">⏭</div><div class="tool-label">다음</div></button>
-    </div>
-    <div class="tool-group">
-      <div class="tool-group-label">모드</div>
-      <button class="tool-btn" id="tbAudioRepeatBtn" onclick="audioToggleRepeat()"><div class="tool-icon">🔁</div><div class="tool-label">반복</div></button>
-      <button class="tool-btn" id="tbAudioShuffleBtn" onclick="audioToggleShuffle()"><div class="tool-icon">🔀</div><div class="tool-label">셔플</div></button>
-    </div>
-    <div class="tool-group">
-      <div class="tool-group-label">볼륨</div>
-      <button class="tool-btn" id="tbAudioVolBtn" onclick="audioToggleMute()"><div class="tool-icon">🔊</div><div class="tool-label">음소거</div></button>
-      <div style="display:flex;flex-direction:column;align-items:center;padding:2px 4px;">
-        <input type="range" id="tbAudioVol" min="0" max="1" step="0.05" value="1" oninput="audioSetVolume(+this.value)" style="width:60px;accent-color:#4fa8ff;">
-        <div class="tool-label">볼륨</div>
-      </div>
-    </div>
-    <div class="tool-group">
-      <div class="tool-group-label">속도</div>
-      <button class="tool-btn" onclick="audioSetSpeed(0.75)"><div class="tool-icon">🐢</div><div class="tool-label">0.75x</div></button>
-      <button class="tool-btn" onclick="audioSetSpeed(1)"><div class="tool-icon">▶▶</div><div class="tool-label" style="color:#4fa8ff;font-weight:bold;">1x</div></button>
-      <button class="tool-btn" onclick="audioSetSpeed(1.5)"><div class="tool-icon">🐇</div><div class="tool-label">1.5x</div></button>
-      <button class="tool-btn" onclick="audioSetSpeed(2)"><div class="tool-icon">⚡</div><div class="tool-label">2x</div></button>
-    </div>
-    <div class="tool-group">
-      <button class="tool-btn" onclick="audioTogglePlaylist()"><div class="tool-icon">🎵</div><div class="tool-label">목록</div></button>
-    </div>
-  </div>
-</div>
+            <!-- 그룹2: 포맷 변환 -->
+            <div class="tool-group">
+                <div class="tool-group-label">포맷변환</div>
+                <button class="tool-btn" onclick="vcOpenPanel('mp4')" title="MP4(H.264)로 변환">
+                    <div class="tool-icon">🎞</div>
+                    <div class="tool-label">MP4</div>
+                </button>
+                <button class="tool-btn" onclick="vcOpenPanel('webm')" title="WebM(VP9)으로 변환">
+                    <div class="tool-icon">🌐</div>
+                    <div class="tool-label">WebM</div>
+                </button>
+                <button class="tool-btn" onclick="vcOpenPanel('mp3')" title="오디오만 MP3로 추출">
+                    <div class="tool-icon">🎵</div>
+                    <div class="tool-label">MP3추출</div>
+                </button>
+                <button class="tool-btn" onclick="vcOpenPanel('gif')" title="GIF로 변환 (10초 이내 권장)">
+                    <div class="tool-icon">📦</div>
+                    <div class="tool-label">GIF</div>
+                </button>
+            </div>
 
-<!-- 메인 컨테이너 -->
-<div class="main-container">
-  <!-- 썸네일 패널 -->
-  <div class="thumbnail-panel" id="thumbnailPanel">
-    <div class="panel-header">
-      <span>이미지 목록<span id="selectedCount" onclick="showDeleteSelectionMenu()" style="margin-left:8px;color:#28a745;font-weight:bold;display:none;cursor:pointer;"></span><span onclick="showDeleteSelectionMenu()" style="margin-left:8px;cursor:pointer;opacity:0.6;font-size:11px;" title="선택 메뉴">☰</span></span>
-      <span class="panel-toggle" onclick="toggleThumbnails()" title="패널 접기/펼치기 (F9)">◀</span>
-    </div>
-    <div class="panel-tab" onclick="toggleThumbnails()">미디어 목록</div>
-    <div class="thumbnail-list" id="thumbnailList"></div>
-  </div>
+            <!-- 그룹3: 해상도 -->
+            <div class="tool-group">
+                <div class="tool-group-label">해상도</div>
+                <button class="tool-btn" onclick="vcSetResolution('1920x1080');vcOpenPanelKeep('mp4')" title="1920×1080 (Full HD)">
+                    <div class="tool-icon">📺</div>
+                    <div class="tool-label">1080p</div>
+                </button>
+                <button class="tool-btn" onclick="vcSetResolution('1280x720');vcOpenPanelKeep('mp4')" title="1280×720 (HD)">
+                    <div class="tool-icon">🖥</div>
+                    <div class="tool-label">720p</div>
+                </button>
+                <button class="tool-btn" onclick="vcSetResolution('854x480');vcOpenPanelKeep('mp4')" title="854×480 (모바일)">
+                    <div class="tool-icon">📱</div>
+                    <div class="tool-label">480p</div>
+                </button>
+                <button class="tool-btn" onclick="vcSetResolution('custom');vcOpenPanelKeep('mp4')" title="해상도 직접 입력">
+                    <div class="tool-icon">✏️</div>
+                    <div class="tool-label">직접입력</div>
+                </button>
+            </div>
 
-  <!-- 뷰어 영역 -->
-  <div class="viewer-area" id="viewerArea">
-    <div class="drop-zone" id="dropZone">
-      <div class="drop-zone-icon">🎵</div>
-      <div class="drop-zone-text">이미지, 영상, 음악을 드래그하여 놓으세요</div>
-      <div class="drop-zone-hint">또는 Ctrl+O 를 눌러 파일을 선택하세요<br>JPG·PNG·GIF·WebP·MP4·WebM·MOV·MP3·FLAC·AAC·WAV·ZIP 지원</div>
+            <!-- 그룹4: 품질 -->
+            <div class="tool-group">
+                <div class="tool-group-label">품질</div>
+                <button class="tool-btn" onclick="vcSetQuality(18);vcOpenPanelKeep('mp4')" title="고품질 CRF 18 (고용량)">
+                    <div class="tool-icon">🔼</div>
+                    <div class="tool-label">고품질</div>
+                </button>
+                <button class="tool-btn vc-quality-active" id="vcQualityMidBtn" onclick="vcSetQuality(23);vcOpenPanelKeep('mp4')" title="중간 CRF 23 (기본)">
+                    <div class="tool-icon">🎯</div>
+                    <div class="tool-label">중간</div>
+                </button>
+                <button class="tool-btn" onclick="vcSetQuality(28);vcOpenPanelKeep('mp4')" title="저용량 CRF 28 (스트리밍)">
+                    <div class="tool-icon">🔽</div>
+                    <div class="tool-label">저용량</div>
+                </button>
+            </div>
+
+            <!-- 그룹5: 편집 -->
+            <div class="tool-group">
+                <div class="tool-group-label">편집</div>
+                <button class="tool-btn" onclick="vcOpenPanel('trim')" title="구간 추출 (시작~끝 지정)">
+                    <div class="tool-icon">✂️</div>
+                    <div class="tool-label">구간추출</div>
+                </button>
+                <button class="tool-btn" onclick="vcOpenPanel('mute')" title="오디오 제거">
+                    <div class="tool-icon">🔇</div>
+                    <div class="tool-label">음소거</div>
+                </button>
+                <button class="tool-btn" onclick="vcOpenPanel('rotate')" title="90도 회전 저장">
+                    <div class="tool-icon">🔄</div>
+                    <div class="tool-label">회전저장</div>
+                </button>
+            </div>
+
+            <!-- 그룹7: 정보 + 자동방향 -->
+            <div class="tool-group">
+                <div class="tool-group-label">기타</div>
+                <button class="tool-btn" id="vcInfoBtn" onclick="vcOpenPanel('info')" title="현재 비디오 정보">
+                    <div class="tool-icon">ℹ️</div>
+                    <div class="tool-label">정보</div>
+                </button>
+                <button class="tool-btn" id="vcAutoOrientBtn" onclick="vcToggleAutoOrient()" title="자동 방향 감지 (화면 회전 시 자동 전환)">
+                    <div class="tool-icon">🔁</div>
+                    <div class="tool-label">자동방향</div>
+                </button>
+            </div>
+
+            <!-- 그룹8: 이동 -->
+            <div class="tool-group">
+                <button class="tool-btn" onclick="prevImage()" title="이전 영상">
+                    <div class="tool-icon">⟨</div>
+                    <div class="tool-label">이전</div>
+                </button>
+                <button class="tool-btn" onclick="nextImage()" title="다음 영상">
+                    <div class="tool-icon">⟩</div>
+                    <div class="tool-label">다음</div>
+                </button>
+            </div>
+
+        <!-- ══ 오디오 툴바 그룹 ══ -->
+        <div id="audioToolbarGroups" style="display:none;">
+            <!-- 그룹1: 파일 -->
+            <div class="tool-group">
+                <button class="tool-btn" onclick="openFiles()" title="파일 열기">
+                    <div class="tool-icon">📁</div>
+                    <div class="tool-label">열기</div>
+                </button>
+            </div>
+            <!-- 그룹2: 재생 제어 -->
+            <div class="tool-group">
+                <div class="tool-group-label">재생</div>
+                <button class="tool-btn" onclick="audioPrev()" title="이전 곡 (←)">
+                    <div class="tool-icon">⏮</div>
+                    <div class="tool-label">이전</div>
+                </button>
+                <button class="tool-btn" id="tbAudioPlayBtn" onclick="audioTogglePlay()" title="재생/일시정지 (Space)">
+                    <div class="tool-icon">▶</div>
+                    <div class="tool-label">재생</div>
+                </button>
+                <button class="tool-btn" onclick="audioNext()" title="다음 곡 (→)">
+                    <div class="tool-icon">⏭</div>
+                    <div class="tool-label">다음</div>
+                </button>
+            </div>
+            <!-- 그룹3: 모드 -->
+            <div class="tool-group">
+                <div class="tool-group-label">모드</div>
+                <button class="tool-btn" id="tbAudioRepeatBtn" onclick="audioToggleRepeat()" title="반복 모드">
+                    <div class="tool-icon">🔁</div>
+                    <div class="tool-label">반복</div>
+                </button>
+                <button class="tool-btn" id="tbAudioShuffleBtn" onclick="audioToggleShuffle()" title="셔플">
+                    <div class="tool-icon">🔀</div>
+                    <div class="tool-label">셔플</div>
+                </button>
+            </div>
+            <!-- 그룹4: 볼륨 -->
+            <div class="tool-group">
+                <div class="tool-group-label">볼륨</div>
+                <button class="tool-btn" id="tbAudioVolBtn" onclick="audioToggleMute()" title="음소거">
+                    <div class="tool-icon">🔊</div>
+                    <div class="tool-label">음소거</div>
+                </button>
+                <div style="display:flex;flex-direction:column;align-items:center;padding:2px 4px;min-width:60px;">
+                    <input type="range" id="tbAudioVol" min="0" max="1" step="0.05" value="1"
+                           oninput="audioSetVolume(this.value)"
+                           style="width:60px;accent-color:#4fa8ff;cursor:pointer;"
+                           title="볼륨">
+                    <div class="tool-label">볼륨</div>
+                </div>
+            </div>
+            <!-- 그룹5: 속도 -->
+            <div class="tool-group">
+                <div class="tool-group-label">속도</div>
+                <button class="tool-btn" onclick="audioSetSpeed(0.75)" title="0.75배속">
+                    <div class="tool-icon">🐢</div>
+                    <div class="tool-label">0.75x</div>
+                </button>
+                <button class="tool-btn" id="tbAudioSpeed1Btn" onclick="audioSetSpeed(1)" title="1배속(기본)">
+                    <div class="tool-icon">▶▶</div>
+                    <div class="tool-label" style="color:#4fa8ff;font-weight:bold;">1x</div>
+                </button>
+                <button class="tool-btn" onclick="audioSetSpeed(1.5)" title="1.5배속">
+                    <div class="tool-icon">🐇</div>
+                    <div class="tool-label">1.5x</div>
+                </button>
+                <button class="tool-btn" onclick="audioSetSpeed(2)" title="2배속">
+                    <div class="tool-icon">⚡</div>
+                    <div class="tool-label">2x</div>
+                </button>
+            </div>
+            <!-- 그룹6: 플레이리스트 -->
+            <div class="tool-group">
+                <div class="tool-group-label">목록</div>
+                <button class="tool-btn" onclick="audioTogglePlaylist()" title="플레이리스트 열기/닫기">
+                    <div class="tool-icon">🎵</div>
+                    <div class="tool-label">목록</div>
+                </button>
+            </div>
+        </div><!-- /#audioToolbarGroups -->
+
+        </div><!-- /#videoToolbarGroups -->
     </div>
 
-    <!-- 오디오 플레이어 -->
-    <div id="audioWrapper">
-      <div class="audio-bg-wave"></div>
-      <div class="audio-bg-wave"></div>
-      <div class="audio-bg-wave"></div>
-      <div id="audioLyricBar">
-        <button class="lyric-bar-btn" id="lyricToggleBtn" onclick="audioToggleLyric()">🎤 가사</button>
-        <label class="lyric-bar-btn" style="cursor:pointer;">
-          📂 LRC
-          <input type="file" id="lrcFileInput" accept=".lrc,.txt" style="display:none" onchange="audioLoadLrcFile(this)">
-        </label>
-      </div>
-      <div id="audioLyricPanel">
-        <div id="lyricStatus"></div>
-        <div id="lyricScroll" style="display:none;"><div id="lyricInner"></div></div>
-      </div>
-      <div class="audio-art-wrap">
-        <img id="audioArt" src="" alt="">
-        <div class="audio-art-note" id="audioArtNote">🎵</div>
-      </div>
-      <div class="audio-info">
-        <div id="audioTitle">음악을 불러오세요</div>
-        <div id="audioSubInfo">0:00 / 0:00</div>
-      </div>
-      <div id="audioVisualizer"></div>
-      <div class="audio-progress-wrap">
-        <div id="audioTrack">
-          <div id="audioFill"></div>
-          <div id="audioThumb"></div>
+    <!-- 메인 컨텐츠 -->
+    <div class="main-container">
+        <!-- 썸네일 패널 -->
+        <div class="thumbnail-panel" id="thumbnailPanel">
+            <div class="panel-header">
+                <span>이미지 목록<span id="selectedCount" onclick="showDeleteSelectionMenu()" style="margin-left: 8px; color: #28a745; font-weight: bold; display: none; cursor: pointer;"></span><span onclick="showDeleteSelectionMenu()" style="margin-left: 8px; cursor: pointer; opacity: 0.6; font-size: 11px;" title="선택 메뉴">☰</span></span>
+                <span class="panel-toggle" onclick="toggleThumbnails()" title="패널 접기/펼치기 (F9)">◀</span>
+            </div>
+            <div class="panel-tab" onclick="toggleThumbnails()">이미지 목록</div>
+            <div class="thumbnail-list" id="thumbnailList">
+                <!-- 동적 생성 -->
+            </div>
         </div>
-        <div class="audio-time-row">
-          <span id="audioCurTime">0:00</span>
-          <span id="audioDurTime">0:00</span>
-        </div>
-      </div>
-      <div class="audio-controls">
-        <button class="ac-btn" id="audioShuffleBtn" onclick="audioToggleShuffle()">🔀</button>
-        <button class="ac-btn" onclick="audioPrev()">⏮</button>
-        <button class="ac-btn" id="audioPlayBtn" onclick="audioTogglePlay()">▶</button>
-        <button class="ac-btn" onclick="audioNext()">⏭</button>
-        <button class="ac-btn" id="audioRepeatBtn" onclick="audioToggleRepeat()">🔁</button>
-      </div>
-      <div class="audio-sub-controls">
-        <button class="ac-sub-btn" id="audioMuteBtn" onclick="audioToggleMute()">🔊</button>
-        <input type="range" id="audioVolSlider" min="0" max="1" step="0.05" value="1" oninput="audioSetVolume(+this.value)" style="width:80px;accent-color:#4fa8ff;cursor:pointer;">
-        <button class="ac-speed-btn" id="audioSpeedBtn" onclick="audioCycleSpeed()">1.0x</button>
-        <button class="ac-sub-btn" onclick="audioTogglePlaylist()">🎵</button>
-      </div>
-      <div id="audioPlaylist"></div>
-      <audio id="audioPlayer" preload="metadata"></audio>
-    </div>
 
-    <!-- 비디오 래퍼 -->
-    <div id="videoWrapper">
-      <video id="videoPlayer" playsinline webkit-playsinline x5-playsinline preload="metadata"
-        style="width:auto;height:auto;max-width:100%;max-height:calc(100% - 52px);background:#000;object-fit:contain;display:block;"></video>
-      <div id="videoOverlay">
-        <div id="videoProgressBar">
-          <button class="vctrl-btn" id="videoPlayBtn" onclick="togglePlay()">▶</button>
-          <span id="videoCurTime">0:00</span>
-          <div id="videoTrack">
-            <div id="videoFill"></div>
-            <div id="videoThumb"></div>
-          </div>
-          <span id="videoDurTime">0:00</span>
-          <button class="vctrl-btn" id="vVolBtn" onclick="toggleMute()">🔊</button>
-          <input type="range" id="vVolSlider" min="0" max="1" step="0.05" value="1" oninput="setVolume(+this.value)" style="width:64px;flex-shrink:0;accent-color:#4fa8ff;cursor:pointer;">
-          <button class="vctrl-btn" id="vFsBtn" onclick="showFsPopup(event)">⛶</button>
-        </div>
-        <div id="vFsPopup" style="display:none;position:absolute;bottom:60px;right:10px;background:rgba(20,20,30,0.97);border:1px solid #555;border-radius:8px;padding:6px 0;z-index:200;min-width:170px;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
-          <div onclick="setVideoWindowSize('16:9')" style="padding:9px 18px;color:#eee;cursor:pointer;font-size:13px;">🖥 16:9 창 크기</div>
-          <div onclick="setVideoWindowSize('4:3')"  style="padding:9px 18px;color:#eee;cursor:pointer;font-size:13px;">📺 4:3 창 크기</div>
-          <div onclick="setVideoWindowSize('original')" style="padding:9px 18px;color:#eee;cursor:pointer;font-size:13px;">↩ 원래대로</div>
-          <div style="height:1px;background:#444;margin:4px 8px;"></div>
-          <div onclick="doFullscreen();closeFsPopup()" style="padding:9px 18px;color:#fff;cursor:pointer;font-size:13px;font-weight:bold;">⛶ 전체화면</div>
-        </div>
-        <div id="videoControlBar">
-          <button class="vctrl-btn" onclick="prevVideo()">⏮</button>
-          <button class="vctrl-btn" onclick="nextVideo()">⏭</button>
-          <button class="vctrl-btn" id="vRepeatOneBtn" onclick="toggleRepeatOne()">🔂</button>
-          <button class="vctrl-btn" id="vRepeatAllBtn" onclick="toggleRepeatAll()">🔁</button>
-          <button class="vctrl-btn" onclick="seekBackward()" style="font-size:12px;font-weight:bold;">-5</button>
-          <button class="vctrl-btn" onclick="seekForward()"  style="font-size:12px;font-weight:bold;">+5</button>
-        </div>
-      </div>
-    </div>
+        <!-- 뷰어 영역 -->
+        <div class="viewer-area" id="viewerArea">
+            <div class="drop-zone" id="dropZone">
+                <div class="drop-zone-icon">🎵</div>
+                <div class="drop-zone-text">이미지, 영상, 음악을 드래그하여 놓으세요</div>
+                <div class="drop-zone-hint">또는 Ctrl+O 를 눌러 파일을 선택하세요<br>JPG, PNG, GIF, BMP, WebP, MP4, WebM, MOV, MP3, FLAC, AAC, WAV, ZIP 지원</div>
+            </div>
+            
+            <!-- 오디오 플레이어 -->
+            <div id="audioWrapper">
+                <!-- 배경 파동 -->
+                <div class="audio-bg-wave"></div>
+                <div class="audio-bg-wave"></div>
+                <div class="audio-bg-wave"></div>
+                <!-- 가사 토글 버튼 (상단 우측) -->
+                <div id="audioLyricBar">
+                    <button class="lyric-bar-btn" id="lyricToggleBtn" onclick="audioToggleLyric()">🎤 가사</button>
+                    <label class="lyric-bar-btn" title=".lrc / .txt 업로드" style="cursor:pointer;">
+                        📂 LRC
+                        <input type="file" id="lrcFileInput" accept=".lrc,.txt" style="display:none" onchange="audioLoadLrcFile(this)">
+                    </label>
+                </div>
+                <!-- 가사 패널 -->
+                <div id="audioLyricPanel">
+                    <div id="lyricStatus"></div>
+                    <div id="lyricScroll" style="display:none;">
+                        <div id="lyricInner"></div>
+                    </div>
+                </div>
+                <!-- 앨범 아트 -->
+                <div class="audio-art-wrap">
+                    <img id="audioArt" src="" alt="">
+                    <div class="audio-art-note" id="audioArtNote">🎵</div>
+                </div>
+                <!-- 곡 정보 -->
+                <div class="audio-info">
+                    <div id="audioTitle">음악을 불러오세요</div>
+                    <div id="audioSubInfo">0:00 / 0:00</div>
+                </div>
+                <!-- 시각화 바 -->
+                <div id="audioVisualizer"></div>
+                <!-- 진행바 -->
+                <div class="audio-progress-wrap">
+                    <div id="audioTrack">
+                        <div id="audioFill"></div>
+                        <div id="audioThumb"></div>
+                    </div>
+                    <div class="audio-time-row">
+                        <span id="audioCurTime">0:00</span>
+                        <span id="audioDurTime">0:00</span>
+                    </div>
+                </div>
+                <!-- 메인 컨트롤 -->
+                <div class="audio-controls">
+                    <button class="ac-btn" id="audioShuffleBtn" onclick="audioToggleShuffle()" title="셔플">🔀</button>
+                    <button class="ac-btn" onclick="audioPrev()" title="이전 곡">⏮</button>
+                    <button class="ac-btn" id="audioPlayBtn" onclick="audioTogglePlay()" title="재생/일시정지">▶</button>
+                    <button class="ac-btn" onclick="audioNext()" title="다음 곡">⏭</button>
+                    <button class="ac-btn" id="audioRepeatBtn" onclick="audioToggleRepeat()" title="반복">🔁</button>
+                </div>
+                <!-- 부가 컨트롤 -->
+                <div class="audio-sub-controls">
+                    <button class="ac-sub-btn" id="audioMuteBtn" onclick="audioToggleMute()" title="음소거">🔊</button>
+                    <input type="range" id="audioVolSlider" min="0" max="1" step="0.05" value="1"
+                           oninput="audioSetVolume(this.value)"
+                           style="width:80px;accent-color:#4fa8ff;cursor:pointer;" title="볼륨">
+                    <button class="ac-speed-btn" id="audioSpeedBtn" onclick="audioCycleSpeed()" title="재생 속도">1.0x</button>
+                    <button class="ac-sub-btn" onclick="audioTogglePlaylist()" title="플레이리스트">🎵</button>
+                </div>
+                <!-- 플레이리스트 -->
+                <div id="audioPlaylist"></div>
+                <!-- 숨은 audio 요소 -->
+                <audio id="audioPlayer" preload="metadata"></audio>
+            </div>
 
-    <!-- 이미지 조정 패널 -->
-<!-- 편집 패널 -->
+                        <!-- 비디오 래퍼 -->
+            <div id="videoWrapper">
+                <!-- controls 제거: TV WebView 자체 에러 팝업 방지 -->
+                <video id="videoPlayer"
+                       playsinline
+                       webkit-playsinline
+                       x5-playsinline
+                       x-webkit-airplay="allow"
+                       preload="metadata"
+                       style="width:auto;height:auto;max-width:100%;max-height:calc(100% - 52px);background:#000;object-fit:contain;display:block;"></video>
+
+                <!-- 비디오 오버레이 (마우스/터치 시 표시) -->
+                <div id="videoOverlay">
+                    <!-- 중앙 재생버튼 제거 → 하단 진행바로 통합 -->
+                    <!-- 하단 진행바 -->
+                    <div id="videoProgressBar">
+                        <!-- 재생/일시정지 버튼 -->
+                        <button class="vctrl-btn" id="videoPlayBtn" onclick="togglePlay()" title="재생/일시정지 (Space)" style="flex-shrink:0;">▶</button>
+                        <!-- 시간 현재 -->
+                        <span id="videoCurTime">0:00</span>
+                        <!-- 진행 트랙 -->
+                        <div id="videoTrack" onmousedown="seekTrackStart(event)" ontouchstart="seekTrackStart(event)">
+                            <div id="videoFill"></div>
+                            <div id="videoThumb"></div>
+                        </div>
+                        <!-- 시간 전체 -->
+                        <span id="videoDurTime">0:00</span>
+                        <!-- 볼륨 아이콘 -->
+                        <button class="vctrl-btn" id="vVolBtn" onclick="toggleMute()" title="음소거 토글" style="flex-shrink:0;">🔊</button>
+                        <!-- 볼륨 슬라이더 -->
+                        <input type="range" id="vVolSlider" min="0" max="1" step="0.05" value="1"
+                               oninput="setVolume(this.value)" title="볼륨 조절"
+                               style="width:64px;flex-shrink:0;accent-color:#4fa8ff;cursor:pointer;">
+                        <!-- 전체화면 -->
+                        <button class="vctrl-btn" id="vFsBtn" onclick="showFsPopup(event)" title="화면 크기 선택" style="flex-shrink:0;">⛶</button>
+                    </div>
+                    <!-- 전체화면 팝업 (videoOverlay 직접 자식 - z-index 독립) -->
+                    <div id="vFsPopup" style="display:none;position:absolute;bottom:60px;right:10px;background:rgba(20,20,30,0.97);border:1px solid #555;border-radius:8px;padding:6px 0;z-index:200;min-width:170px;box-shadow:0 4px 20px rgba(0,0,0,0.7);pointer-events:auto;">
+                        <div onclick="setVideoWindowSize('16:9')"              style="padding:9px 18px;color:#eee;cursor:pointer;font-size:13px;white-space:nowrap;" onmouseover="this.style.background='rgba(79,168,255,0.2)'" onmouseout="this.style.background=''">🖥 &nbsp;16:9 창 크기</div>
+                        <div onclick="setVideoWindowSize('4:3')"               style="padding:9px 18px;color:#eee;cursor:pointer;font-size:13px;white-space:nowrap;" onmouseover="this.style.background='rgba(79,168,255,0.2)'" onmouseout="this.style.background=''">📺 &nbsp;4:3 창 크기</div>
+                        <div onclick="setVideoWindowSize('original')"          style="padding:9px 18px;color:#eee;cursor:pointer;font-size:13px;white-space:nowrap;" onmouseover="this.style.background='rgba(79,168,255,0.2)'" onmouseout="this.style.background=''">↩ &nbsp;원래대로</div>
+                        <div style="height:1px;background:#444;margin:4px 8px;"></div>
+                        <div onclick="doFullscreen();closeFsPopup()"           style="padding:9px 18px;color:#fff;cursor:pointer;font-size:13px;white-space:nowrap;font-weight:bold;" onmouseover="this.style.background='rgba(79,168,255,0.2)'" onmouseout="this.style.background=''">⛶ &nbsp;전체화면</div>
+                    </div>
+                    <!-- 우측 세로 컨트롤 바 -->
+                    <div id="videoControlBar">
+                        <button class="vctrl-btn" id="vPrevBtn"      onclick="prevVideo()"             title="이전 영상">⏮</button>
+                        <button class="vctrl-btn" id="vNextBtn"      onclick="nextVideo()"             title="다음 영상">⏭</button>
+                        <button class="vctrl-btn" id="vRepeatOneBtn" onclick="toggleRepeatOne()"       title="한 영상 반복">🔂</button>
+                        <button class="vctrl-btn" id="vRepeatAllBtn" onclick="toggleRepeatAll()"       title="전체 연속 재생">🔁</button>
+                        <button class="vctrl-btn" id="vOrientBtn"    onclick="toggleOrientation()"    title="가로/세로 전환">▬</button>
+                        <button class="vctrl-btn" id="vSizeBtn"      onclick="toggleVideoActualSize()" title="원본/축소 전환">📐</button>
+                        <button class="vctrl-btn" id="vSeekBackBtn"  onclick="seekBackward()"          title="5초 뒤로" style="font-size:12px;font-weight:bold;">-5</button>
+                        <button class="vctrl-btn" id="vSeekFwdBtn"   onclick="seekForward()"           title="5초 앞으로" style="font-size:12px;font-weight:bold;">+5</button>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="image-container hidden">
+                <canvas id="mainCanvas"></canvas>
+                
+                <!-- 현재 이미지 크기 표시 -->
+                <div id="imageSizeDisplay" style="
+                    position: absolute;
+                    bottom: 10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(0, 0, 0, 0.5);
+                    padding: 4px 12px;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    color: #999;
+                    pointer-events: none;
+                    display: none;
+                "></div>
+            </div>
+
+            <!-- 이미지 줌 컨트롤 -->
+            <div class="zoom-control">
+                <button class="zoom-btn" id="zoomOutBtn" onclick="zoomOut()">-</button>
+                <div class="zoom-level" id="zoomLevel">100%</div>
+                <button class="zoom-btn" id="zoomInBtn" onclick="zoomIn()">+</button>
+                <button class="zoom-btn" id="fitScreenBtn" onclick="fitToScreen()" title="화면에 맞추기 (\)">⊡</button>
+                <button class="zoom-btn" id="actualSizeBtn" onclick="actualSize()" title="실제 크기 (0)">1:1</button>
+            </div>
+        </div>
+
+        <!-- 편집 패널 -->
         <!-- 이미지 패널 (새로 추가) -->
         <div class="edit-panel" id="imagePanel">
             <div class="panel-header">
@@ -682,8 +881,6 @@
         </div>
 
         <!-- 편집 패널 -->
-    <!-- 편집 패널 -->
-<!-- 편집 패널 -->
         <div class="edit-panel" id="editPanel">
             <div class="panel-header">
                 <span>편집</span>
@@ -807,55 +1004,116 @@
         </div>
     </div>
 
-    <!-- 비디오 변환: MediaRecorder + Canvas + WebAudio (FFmpeg 불필요) -->
-    <!-- 이미지 캔버스 -->
-    <div class="image-container hidden">
-      <canvas id="mainCanvas"></canvas>
-    </div>
 
-    <!-- 줌 컨트롤 -->
-    <div class="zoom-control">
-      <button class="zoom-btn" id="zoomOutBtn" onclick="zoomOut()">-</button>
-      <div class="zoom-level" id="zoomLevel">100%</div>
-      <button class="zoom-btn" id="zoomInBtn" onclick="zoomIn()">+</button>
-      <button class="zoom-btn" id="fitScreenBtn" onclick="fitToScreen()" title="화면에 맞추기">⊡</button>
-      <button class="zoom-btn" id="actualSizeBtn" onclick="actualSize()" title="실제 크기">1:1</button>
-    </div>
-  </div>
-</div>
-
-    <div class="statusbar">
-        <div class="status-item" id="statusIndex">0/0</div>
-        <div class="status-separator"></div>
-        <div class="status-item" id="statusDimensions">-</div>
-        <div class="status-separator"></div>
-        <div class="status-item" id="statusSize">-</div>
-        <div class="status-separator"></div>
-        <div class="status-item" id="statusFormat">-</div>
-    </div>
-
-<!-- 이미지 전체보기 오버레이 -->
-<div class="image-view-overlay" id="imageViewOverlay">
-  <div class="image-view-container" id="imageViewContainer">
-    <img id="imageViewImg" class="image-view-img" src="" alt="">
-    <div class="image-view-nav prev" onclick="imageViewPrev()">⟨</div>
-    <div class="image-view-nav next" onclick="imageViewNext()">⟩</div>
-    <div class="image-view-close" onclick="toggleImageView()">✕</div>
-    <div class="image-view-info" id="imageViewInfo">1 / 1</div>
-    <div id="imageViewThumb"></div>
-    <div id="imageViewToolbar">
-      <button class="iv-tool-btn" onclick="ivRotateLeft()"><span class="iv-tool-icon">⟲</span><span class="iv-tool-label">좌회전</span></button>
-      <button class="iv-tool-btn" onclick="ivRotateRight()"><span class="iv-tool-icon">⟳</span><span class="iv-tool-label">우회전</span></button>
-      <button class="iv-tool-btn" onclick="ivCrop()"><span class="iv-tool-icon">✂️</span><span class="iv-tool-label">자르기</span></button>
-      <button class="iv-tool-btn" onclick="ivToggleThumb()"><span class="iv-tool-icon">🖼️</span><span class="iv-tool-label">목록</span></button>
-    </div>
-  </div>
-</div>
-
-<!-- 파일 입력 -->
-<input type="file" id="fileInput" multiple
-  accept="image/*,video/*,audio/*,.zip,.mp3,.flac,.aac,.wav,.ogg,.m4a,.opus,.wma,.aiff"
-  style="display:none">
+    <!-- 비디오 변환 패널 -->
+        <div id="videoConvertPanel">
+            <div class="vcp-header">
+                <span id="vcPanelTitle">🎬 비디오 변환</span>
+                <button class="vcp-close" onclick="vcClosePanel()" title="닫기">✕</button>
+            </div>
+            <div class="vcp-body">
+                <!-- 파일 정보 -->
+                <div class="vcp-info">
+                    <div>파일: <span class="vcp-info-val" id="vcFileName">-</span></div>
+                    <div>크기: <span class="vcp-info-val" id="vcFileSize">-</span></div>
+                    <div>해상도: <span class="vcp-info-val" id="vcFileRes">-</span></div>
+                    <div>길이: <span class="vcp-info-val" id="vcFileDur">-</span></div>
+                </div>
+                <!-- 대용량 경고 -->
+                <div class="vcp-warn" id="vcSizeWarn">
+                    ⚠️ 파일이 큽니다 (500MB+). 브라우저 메모리 한계로 실패할 수 있습니다.
+                </div>
+                <!-- ── 정보 전용 섹션 (info 모드) ── -->
+                <div id="vcInfoSection" style="display:none;">
+                    <div class="vcp-section">
+                        <div class="vcp-section-title">📐 영상 정보</div>
+                        <div id="vcInfoContent" style="color:#ccc;font-size:12px;line-height:1.9;"></div>
+                    </div>
+                </div>
+                <!-- ── 변환 설정 본문 ── -->
+                <div id="vcConvertBody">
+                <!-- 출력 설정 -->
+                <div class="vcp-section">
+                    <div class="vcp-section-title">출력 설정</div>
+                    <div class="vcp-row">
+                        <span class="vcp-label">출력 형식</span>
+                        <select class="vcp-select" id="vcFormat" onchange="vcOnFormatChange()">
+                            <option value="mp4">MP4 (H.264)</option>
+                            <option value="webm">WebM (VP9)</option>
+                            <option value="mp3">MP3 (오디오만)</option>
+                            <option value="gif">GIF</option>
+                        </select>
+                    </div>
+                    <div class="vcp-row" id="vcResRow">
+                        <span class="vcp-label">해상도</span>
+                        <select class="vcp-select" id="vcResolution" onchange="vcOnResChange()">
+                            <option value="original">원본 유지</option>
+                            <option value="1920x1080">1080p (1920×1080)</option>
+                            <option value="1280x720">720p (1280×720)</option>
+                            <option value="854x480">480p (854×480)</option>
+                            <option value="custom">직접 입력</option>
+                        </select>
+                    </div>
+                    <div class="vcp-row" id="vcCustomResRow" style="display:none;">
+                        <span class="vcp-label">크기</span>
+                        <input class="vcp-input" id="vcCustomW" type="number" placeholder="가로" min="1" style="width:58px;flex:none;">
+                        <span style="color:#888;font-size:12px;padding:0 2px;">×</span>
+                        <input class="vcp-input" id="vcCustomH" type="number" placeholder="세로" min="1" style="width:58px;flex:none;">
+                    </div>
+                    <div class="vcp-row" id="vcQualityRow">
+                        <span class="vcp-label">품질</span>
+                        <select class="vcp-select" id="vcQuality">
+                            <option value="18">고품질 (CRF 18)</option>
+                            <option value="23" selected>중간 (CRF 23)</option>
+                            <option value="28">저용량 (CRF 28)</option>
+                        </select>
+                    </div>
+                    <div class="vcp-row" id="vcAudioRow">
+                        <span class="vcp-label">오디오</span>
+                        <select class="vcp-select" id="vcAudio">
+                            <option value="keep">유지</option>
+                            <option value="remove">제거 (무음)</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- 구간 추출 -->
+                <div class="vcp-section" id="vcTrimSection">
+                    <div class="vcp-section-title">구간 추출 (비우면 전체)</div>
+                    <div class="vcp-row">
+                        <span class="vcp-label">시작</span>
+                        <input class="vcp-time-input" id="vcTrimStart" type="text" placeholder="0:00">
+                    </div>
+                    <div class="vcp-row">
+                        <span class="vcp-label">끝</span>
+                        <input class="vcp-time-input" id="vcTrimEnd" type="text" placeholder="전체">
+                    </div>
+                </div>
+                <!-- 회전 저장 옵션 -->
+                <div class="vcp-section" id="vcRotateSection" style="display:none;">
+                    <div class="vcp-section-title">회전 방향</div>
+                    <div class="vcp-row">
+                        <span class="vcp-label">방향</span>
+                        <select class="vcp-select" id="vcRotateDir">
+                            <option value="90">시계방향 90°</option>
+                            <option value="-90">반시계방향 90°</option>
+                            <option value="180">180°</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- 변환 시작 버튼 -->
+                <button class="vcp-start-btn" id="vcStartBtn" onclick="vcStartConvert()">▶ 변환 시작</button>
+                <!-- 진행 표시 -->
+                <div class="vcp-progress-wrap" id="vcProgressWrap">
+                    <div class="vcp-progress-bar-bg">
+                        <div class="vcp-progress-bar-fill" id="vcProgressFill"></div>
+                    </div>
+                    <div class="vcp-progress-text" id="vcProgressText">준비 중...</div>
+                </div>
+                <!-- 완료 메시지 -->
+                <div class="vcp-done-msg" id="vcDoneMsg">✅ 변환 완료! 파일이 다운로드되었습니다.</div>
+                </div><!-- /#vcConvertBody -->
+            </div><!-- /.vcp-body -->
+        </div><!-- /#videoConvertPanel -->
 
   <script type="module" src="/src/main.ts"></script>
 </body>
