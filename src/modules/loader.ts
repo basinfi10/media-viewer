@@ -166,10 +166,16 @@ export function makeThumbnail(url: string): Promise<string | null> {
     v.onseeked = () => {
       clearTimeout(timer);
       try {
+        const vw = v.videoWidth  || 160;
+        const vh = v.videoHeight || 90;
+        // 비율 유지: 최대 160×120 안에 맞춤
+        const maxW = 160, maxH = 120;
+        const scale = Math.min(maxW / vw, maxH / vh);
         const c = document.createElement('canvas');
-        c.width = 160; c.height = 90;
-        c.getContext('2d')?.drawImage(v, 0, 0, 160, 90);
-        resolve(c.toDataURL('image/jpeg', 0.7));
+        c.width  = Math.round(vw * scale);
+        c.height = Math.round(vh * scale);
+        c.getContext('2d')?.drawImage(v, 0, 0, c.width, c.height);
+        resolve(c.toDataURL('image/jpeg', 0.75));
       } catch { resolve(null); }
       v.src = '';
     };
