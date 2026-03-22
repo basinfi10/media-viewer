@@ -73,6 +73,7 @@ export interface FilterState {
   brightness: number;
   contrast: number;
   saturation: number;
+  hue: number;         // 색조 (-180 ~ 180)
   sharpness: number;
   blur: number;
   temperature: number;

@@ -5,7 +5,7 @@ import type {
 
 // ── 초기 필터 상태 ────────────────────────────────────────────
 export const defaultFilters = (): FilterState => ({
-  brightness: 0, contrast: 0, saturation: 0, sharpness: 0,
+  brightness: 0, contrast: 0, saturation: 0, hue: 0, sharpness: 0,
   blur: 0, temperature: 0, tint: 0, highlights: 0,
   shadows: 0, clarity: 0, vignette: 0, noise: 0,
   rotateAngle: 0, flipH: false, flipV: false,

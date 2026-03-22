@@ -348,17 +348,18 @@ export function applyFilmEffect(type) {
         }
 
 export function updateFilters() {
-            app.filters.brightness = parseInt(document.getElementById('brightness').value);
-            app.filters.contrast = parseInt(document.getElementById('contrast').value);
-            app.filters.saturation = parseInt(document.getElementById('saturation').value);
-            app.filters.hue = parseInt(document.getElementById('hue').value);
-            app.filters.sharpness = parseInt(document.getElementById('sharpness').value);
+            app.filters.brightness = parseInt((document.getElementById('brightness') as HTMLInputElement).value);
+            app.filters.contrast   = parseInt((document.getElementById('contrast')   as HTMLInputElement).value);
+            app.filters.saturation = parseInt((document.getElementById('saturation') as HTMLInputElement).value);
+            app.filters.hue        = parseInt((document.getElementById('hue')        as HTMLInputElement).value);
+            app.filters.sharpness  = parseInt((document.getElementById('sharpness')  as HTMLInputElement).value);
 
-            document.getElementById('brightnessValue').textContent = app.filters.brightness;
-            document.getElementById('contrastValue').textContent = app.filters.contrast;
-            document.getElementById('saturationValue').textContent = app.filters.saturation;
-            document.getElementById('hueValue').textContent = app.filters.hue + '°';
-            document.getElementById('sharpnessValue').textContent = app.filters.sharpness;
+            const hueVal = app.filters.hue;
+            (document.getElementById('brightnessValue') as HTMLElement).textContent = String(app.filters.brightness);
+            (document.getElementById('contrastValue')   as HTMLElement).textContent = String(app.filters.contrast);
+            (document.getElementById('saturationValue') as HTMLElement).textContent = String(app.filters.saturation);
+            (document.getElementById('hueValue')        as HTMLElement).textContent = hueVal + '°';
+            (document.getElementById('sharpnessValue')  as HTMLElement).textContent = String(app.filters.sharpness);
 
             renderCanvas();
         }

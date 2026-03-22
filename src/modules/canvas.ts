@@ -26,10 +26,12 @@ export function renderCanvas(): void {
   const b = 100 + f.brightness;
   const c = 100 + f.contrast;
   const s = 100 + f.saturation;
+  const h = f.hue ?? 0;
   ctx.filter = [
     `brightness(${b}%)`,
     `contrast(${c}%)`,
     `saturate(${s}%)`,
+    h !== 0 ? `hue-rotate(${h}deg)` : '',
     f.blur > 0 ? `blur(${f.blur}px)` : '',
   ].filter(Boolean).join(' ') || 'none';
 
@@ -105,20 +107,24 @@ export function resetFilters(): void {
 }
 
 function updateFilterUI(): void {
-  const sliders: Record<string, number> = {
-    brightness: app.filters.brightness,
-    contrast:   app.filters.contrast,
-    saturation: app.filters.saturation,
-    blur:       app.filters.blur,
-    temperature:app.filters.temperature,
-    vignette:   app.filters.vignette,
-    sharpness:  app.filters.sharpness,
-  };
-  Object.entries(sliders).forEach(([key, val]) => {
-    const slider = document.getElementById(`${key}Slider`) as HTMLInputElement | null;
-    const value  = document.getElementById(`${key}Value`);
-    if (slider) slider.value = String(val);
-    if (value)  value.textContent  = String(val);
+  // slider ID → value, valueEl ID, 단위
+  const fields: Array<[string, number, string]> = [
+    ['brightness', app.filters.brightness, ''],
+    ['contrast',   app.filters.contrast,   ''],
+    ['saturation', app.filters.saturation, ''],
+    ['hue',        app.filters.hue,        '°'],
+    ['sharpness',  app.filters.sharpness,  ''],
+    ['blur',       app.filters.blur,       ''],
+    ['temperature',app.filters.temperature,''],
+    ['vignette',   app.filters.vignette,   ''],
+  ];
+  fields.forEach(([key, val, unit]) => {
+    // 슬라이더: id="brightness" 또는 id="brightnessSlider" 모두 지원
+    const slider = (document.getElementById(key) ??
+                    document.getElementById(`${key}Slider`)) as HTMLInputElement | null;
+    const valueEl = document.getElementById(`${key}Value`);
+    if (slider)  slider.value = String(val);
+    if (valueEl) valueEl.textContent = val + unit;
   });
 }
 
@@ -198,14 +204,23 @@ function drawCropOverlay(ctx: CanvasRenderingContext2D, cw: number, ch: number, 
 }
 
 // ── 히스토리 (Undo/Redo) ─────────────────────────────────────
-let history: string[] = [];
+interface HistoryEntry {
+  dataUrl: string;
+  filters: ReturnType<typeof defaultFilters>;
+  rotation: number;
+}
+
+let history: HistoryEntry[] = [];
 let historyIdx = -1;
 const MAX_HISTORY = 20;
 
 export function saveHistory(): void {
   const dataUrl = app.canvas.toDataURL('image/png');
+  // 필터 상태를 깊은 복사로 저장
+  const filters = { ...app.filters };
+  const entry: HistoryEntry = { dataUrl, filters, rotation: app.rotation };
   history = history.slice(0, historyIdx + 1);
-  history.push(dataUrl);
+  history.push(entry);
   if (history.length > MAX_HISTORY) history.shift();
   historyIdx = history.length - 1;
 }
@@ -222,15 +237,19 @@ export function redo(): void {
   restoreHistory(history[historyIdx]);
 }
 
-function restoreHistory(dataUrl: string): void {
+function restoreHistory(entry: HistoryEntry): void {
   const img = new Image();
   img.onload = () => {
     app.currentImage = img;
     app.canvas.width  = img.naturalWidth;
     app.canvas.height = img.naturalHeight;
+    // 필터 상태 복원
+    app.filters  = { ...entry.filters };
+    app.rotation = entry.rotation;
     renderCanvas();
+    updateFilterUI();
   };
-  img.src = dataUrl;
+  img.src = entry.dataUrl;
 }
 
 // ── 이미지 저장 ───────────────────────────────────────────────
