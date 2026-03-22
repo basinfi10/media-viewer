@@ -18,8 +18,10 @@ import { applyResizeFromDialog } from './ui/menu';
 import {
   toggleImageSelection, selectAllImages, deselectAllImages,
   deleteSelectedImages, showDeleteSelectionMenu,
-  showBatchEditDialog, updateBatchEditButton, updateThumbnailSelection,
-} from './modules/selection';
+  updateBatchEditButton, updateThumbnailSelection,
+  moveImageToPosition, showContextMenu, removeImage,
+} from './ui/thumbnail';
+import { showBatchEditDialog } from './modules/selection';
 import {
   toggleImagePanel, toggleEditPanel,
   showFilterMenu, applyPresetFilter, applyFilmEffect,
@@ -104,6 +106,7 @@ Object.assign(window, {
   toggleImageSelection, selectAllImages, deselectAllImages,
   deleteSelectedImages, showDeleteSelectionMenu,
   showBatchEditDialog, updateBatchEditButton, updateThumbnailSelection,
+  moveImageToPosition, showContextMenu, removeImage,
   // 이미지 편집/필터
   toggleImagePanel, toggleEditPanel,
   showFilterMenu, applyPresetFilter, applyFilmEffect,
