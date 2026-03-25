@@ -133,9 +133,9 @@ export async function sendAIPrompt() {
         const imageBase64 = await imageToBase64(app.currentImage);
 
         if (model === 'gemini') {
-            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-1.5-flash');
+            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-1.5-flash-latest');
         } else if (model === 'gemini2') {
-            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-2.0-flash-exp');
+            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-2.0-flash-latest');
         } else if (model === 'chatgpt') {
             await callChatGPTAPI(apiKey, prompt, imageBase64, responseText);
         } else if (model === 'claude') {
@@ -660,8 +660,8 @@ async function imageToBase64(img: HTMLImageElement): Promise<string> {
     return canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 }
 
-async function callGeminiAPI(apiKey: string, prompt: string, base64: string, responseEl: HTMLElement, modelVariant: string = 'gemini-1.5-flash'): Promise<string> {
-    const url = `https://generativelanguage.googleapis.com/v1/models/${modelVariant}:generateContent?key=${apiKey}`;
+async function callGeminiAPI(apiKey: string, prompt: string, base64: string, responseEl: HTMLElement, modelVariant: string = 'gemini-1.5-flash-latest'): Promise<string> {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelVariant}:generateContent?key=${apiKey}`;
     const payload = {
         contents: [{
             parts: [
@@ -747,8 +747,8 @@ async function callClaudeAPI(apiKey: string, prompt: string, base64: string, res
 
 async function callAIWithImage(model: string, apiKey: string, prompt: string, base64: string): Promise<string> {
     const dummyEl = document.createElement('div');
-    if (model === 'gemini') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-1.5-flash');
-    if (model === 'gemini2') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-2.0-flash-exp');
+    if (model === 'gemini') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-1.5-flash-latest');
+    if (model === 'gemini2') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-2.0-flash-latest');
     if (model === 'chatgpt') return callChatGPTAPI(apiKey, prompt, base64, dummyEl);
     if (model === 'claude') return callClaudeAPI(apiKey, prompt, base64, dummyEl);
     throw new Error('지원하지 않는 모델입니다.');
@@ -829,10 +829,10 @@ export function manageAIKeys() {
                     <h4 style="font-size: 13px; margin-bottom: 12px;">🤖 기본 서비스 선택</h4>
                     <div style="display: flex; gap: 16px;">
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
-                            <input type="radio" name="defaultAI" value="gemini" ${s.defaultAI === 'gemini' || !s.defaultAI ? 'checked' : ''}> Gemini 1.5
+                            <input type="radio" name="defaultAI" value="gemini" ${s.defaultAI === 'gemini' || !s.defaultAI ? 'checked' : ''}> Gemini 1.5 (Latest)
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer; color: #0078d7; font-weight: bold;">
-                            <input type="radio" name="defaultAI" value="gemini2" ${s.defaultAI === 'gemini2' ? 'checked' : ''}> Gemini 2.0 (추천)
+                            <input type="radio" name="defaultAI" value="gemini2" ${s.defaultAI === 'gemini2' ? 'checked' : ''}> Gemini 2.0 (Latest)
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
                             <input type="radio" name="defaultAI" value="chatgpt" ${s.defaultAI === 'chatgpt' ? 'checked' : ''}> ChatGPT
