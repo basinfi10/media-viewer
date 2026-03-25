@@ -114,7 +114,7 @@ export async function sendAIPrompt() {
     }
 
     const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-    const apiKey = model === 'gemini' ? settings.apiGemini :
+    const apiKey = (model === 'gemini' || model === 'gemini2') ? settings.apiGemini :
         model === 'chatgpt' ? settings.apiChatGPT :
             settings.apiClaude;
 
