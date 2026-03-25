@@ -810,3 +810,83 @@ function syncFilterUI() {
         if (vl) vl.textContent = String(val) + suffix;
     });
 }
+
+export function manageAIKeys() {
+    const s = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
+        <div class="modal-content" style="width: 500px;">
+            <div class="modal-title">
+                <span>🔑 AI API 키 관리</span>
+                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-size: 13px; margin-bottom: 12px;">🤖 기본 서비스 선택</h4>
+                    <div style="display: flex; gap: 16px;">
+                        <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
+                            <input type="radio" name="defaultAI" value="gemini" ${s.defaultAI === 'gemini' || !s.defaultAI ? 'checked' : ''}> Google Gemini
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
+                            <input type="radio" name="defaultAI" value="chatgpt" ${s.defaultAI === 'chatgpt' ? 'checked' : ''}> OpenAI ChatGPT
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
+                            <input type="radio" name="defaultAI" value="claude" ${s.defaultAI === 'claude' ? 'checked' : ''}> Anthropic Claude
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 12px; display: block; margin-bottom: 6px;">Google Gemini API Key</label>
+                    <input type="password" id="apiGemini" value="${s.apiGemini || ''}" placeholder="AI 기능을 사용하려면 키를 입력하세요"
+                        style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; font-size:12px;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 12px; display: block; margin-bottom: 6px;">OpenAI API Key (GPT-4o)</label>
+                    <input type="password" id="apiChatGPT" value="${s.apiChatGPT || ''}" placeholder="AI 기능을 사용하려면 키를 입력하세요"
+                        style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; font-size:12px;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 12px; display: block; margin-bottom: 6px;">Anthropic Claude API Key</label>
+                    <input type="password" id="apiClaude" value="${s.apiClaude || ''}" placeholder="AI 기능을 사용하려면 키를 입력하세요"
+                        style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; font-size:12px;">
+                </div>
+
+                <div style="background: #fff3cd; padding: 12px; border-radius: 4px; border: 1px solid #ffeeba;">
+                    <p style="font-size: 11px; color: #856404; margin: 0;">
+                        ⚠️ API 키는 브라우저의 로컬 저장소(localStorage)에만 저장됩니다. <br>
+                        ⚠️ 지원 모델: Gemini 1.5 Flash, GPT-4o-mini, Claude 3.5 Sonnet
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-small" onclick="saveAIKeys();" style="background: #0078d7; color: white;">저장</button>
+                <button class="btn-small" onclick="this.closest('.modal-overlay').remove()">닫기</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+(window as any).manageAIKeys = manageAIKeys;
+
+export function saveAIKeys() {
+    const s = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
+    
+    const defaultAI = (document.querySelector('input[name="defaultAI"]:checked') as HTMLInputElement)?.value;
+    const apiGemini = (document.getElementById('apiGemini') as HTMLInputElement).value;
+    const apiChatGPT = (document.getElementById('apiChatGPT') as HTMLInputElement).value;
+    const apiClaude = (document.getElementById('apiClaude') as HTMLInputElement).value;
+
+    s.defaultAI = defaultAI;
+    s.apiGemini = apiGemini;
+    s.apiChatGPT = apiChatGPT;
+    s.apiClaude = apiClaude;
+
+    localStorage.setItem('imgViewerSettings', JSON.stringify(s));
+    showToast('AI 설정이 저장되었습니다.');
+    document.querySelector('.modal-overlay')?.remove();
+}
+
+(window as any).saveAIKeys = saveAIKeys;
