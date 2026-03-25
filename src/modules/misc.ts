@@ -133,9 +133,9 @@ export async function sendAIPrompt() {
         const imageBase64 = await imageToBase64(app.currentImage);
 
         if (model === 'gemini') {
-            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-1.5-flash');
+            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-2.5-flash-image');
         } else if (model === 'gemini2') {
-            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-1.5-pro');
+            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-3.1-flash-image-preview');
         } else if (model === 'chatgpt') {
             await callChatGPTAPI(apiKey, prompt, imageBase64, responseText);
         } else if (model === 'claude') {
