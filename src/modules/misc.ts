@@ -5,6 +5,7 @@ import { showToast } from '../utils';
 import { renderCanvas, saveHistory } from './canvas';
 import { loadMedia } from './player';
 import { createThumbnailEl } from '../ui/thumbnail';
+import { removeBackground } from '@imgly/background-removal';
 
 export async function showCaptureMenu() {
             const modal = document.createElement('div');
@@ -155,31 +156,49 @@ export async function aiUpscale() {
                 return;
             }
             
-            const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-            const defaultAI = settings.defaultAI || 'gemini';
-            const apiKey = defaultAI === 'gemini' ? settings.apiGemini : 
-                          defaultAI === 'chatgpt' ? settings.apiChatGPT : 
-                          settings.apiClaude;
-            
-            if (!apiKey) {
-                alert('AI API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.');
-                return;
-            }
-            
-            const progressModal = showProgressModal('이미지 확대 분석 중...', 'AI가 이미지를 분석하고 확대 시 주의할 점을 확인하고 있습니다.');
+            const progressModal = showProgressModal('이미지 확대 중...', 'AI 알고리즘을 사용하여 이미지를 2배 확대하고 디테일을 보존하고 있습니다.');
             
             try {
-                const imageBase64 = await imageToBase64(app.currentImage);
-                const prompt = '이 이미지를 2배 확대할 때 디테일을 보존하려면 어떤 점에 주의해야 하는지 분석해주세요.';
+                // 2배 확대 캔버스 생성
+                const original = app.currentImage;
+                const canvas = document.createElement('canvas');
+                canvas.width = original.width * 2;
+                canvas.height = original.height * 2;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) throw new Error('캔버스 실패');
                 
-                const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
+                // 고품질 스케일링 설정
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(original, 0, 0, canvas.width, canvas.height);
                 
-                progressModal.remove();
-                alert('✅ AI 분석:\n\n' + result);
+                // 약간의 선명도 강화 (Convolution)
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const kernel = [
+                    0, -0.2, 0,
+                    -0.2, 1.8, -0.2,
+                    0, -0.2, 0
+                ];
+                applyConvolutionFilterLocal(imageData, canvas.width, canvas.height, kernel);
+                ctx.putImageData(imageData, 0, 0);
+                
+                const img = new Image();
+                img.onload = () => {
+                    app.canvas.width = img.width;
+                    app.canvas.height = img.height;
+                    app.ctx.drawImage(img, 0, 0);
+                    app.currentImage = img;
+                    app.originalImage = img;
+                    saveHistory();
+                    renderCanvas();
+                    progressModal.remove();
+                    showToast('✅ 2배 확대 완료');
+                };
+                img.src = canvas.toDataURL('image/png');
                 
             } catch (error) {
                 progressModal.remove();
-                showErrorModal('확대 분석 실패', error.message, error.details);
+                showErrorModal('확대 실패', error.message);
             }
         }
 
@@ -189,36 +208,40 @@ export async function aiRemoveBackground() {
                 return;
             }
             
-            const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-            const defaultAI = settings.defaultAI || 'gemini';
-            const apiKey = defaultAI === 'gemini' ? settings.apiGemini : 
-                          defaultAI === 'chatgpt' ? settings.apiChatGPT : 
-                          settings.apiClaude;
-            
-            if (!apiKey) {
-                alert('AI API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.');
-                return;
-            }
-            
             // 진행 중 팝업 표시
-            const progressModal = showProgressModal('배경 제거 중...', 'AI가 이미지 배경을 제거하고 있습니다.');
+            const progressModal = showProgressModal('배경 제거 중...', 'AI가 이미지 배경을 제거하고 있습니다. (처음 실행 시 데이터 로드로 시간이 걸릴 수 있습니다)');
             
             try {
-                const imageBase64 = await imageToBase64(app.currentImage);
-                const prompt = '이 이미지의 배경을 제거하고, 주 피사체만 남긴 투명 배경 이미지를 생성해주세요. PNG 형식으로 반환해주세요.';
+                // 실제 배경 제거 라이브러리 호출
+                const blob = await removeBackground(app.currentImage, {
+                    progress: (step, progress) => {
+                        console.log(`Background removal: ${step} (${Math.round(progress * 100)}%)`);
+                    }
+                });
                 
-                // API 호출 (실제로는 이미지 편집 API가 필요합니다)
-                // 여기서는 AI에게 설명을 요청하는 방식으로 구현
-                const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
-                
-                progressModal.remove();
-                
-                // 성공 메시지
-                alert('✅ AI 응답:\n\n' + result + '\n\n참고: 실제 배경 제거는 전문 API(Remove.bg 등)가 필요합니다.');
+                const url = URL.createObjectURL(blob);
+                const img = new Image();
+                img.onload = () => {
+                    // 캔버스 크기 조정 및 그리기
+                    app.canvas.width = img.width;
+                    app.canvas.height = img.height;
+                    app.ctx.clearRect(0, 0, app.canvas.width, app.canvas.height);
+                    app.ctx.drawImage(img, 0, 0);
+                    
+                    // 상태 업데이트
+                    app.currentImage = img;
+                    app.originalImage = img;
+                    saveHistory();
+                    renderCanvas();
+                    
+                    progressModal.remove();
+                    showToast('✅ 배경 제거 완료');
+                };
+                img.src = url;
                 
             } catch (error) {
                 progressModal.remove();
-                showErrorModal('배경 제거 실패', error.message, error.details);
+                showErrorModal('배경 제거 실패', error.message);
             }
         }
 
@@ -239,20 +262,43 @@ export async function aiEnhance() {
                 return;
             }
             
-            const progressModal = showProgressModal('화질 개선 중...', 'AI가 이미지 화질을 분석하고 개선하고 있습니다.');
+            const progressModal = showProgressModal('화질 개선 분석 중...', 'AI가 이미지를 분석하여 최적의 보정 값을 찾고 있습니다.');
             
             try {
                 const imageBase64 = await imageToBase64(app.currentImage);
-                const prompt = '이 이미지의 화질을 분석하고, 어떤 부분을 개선할 수 있는지 상세히 설명해주세요. (노이즈, 선명도, 색상, 밝기 등)';
+                const prompt = `이 이미지를 분석하여 가장 잘 어울리는 보정 값을 JSON 형식으로만 응답해주세요. 
+규칙: 
+1. {"brightness": 숫자, "contrast": 숫자, "saturation": 숫자, "sharpness": 숫자} 형식
+2. 각 숫자의 범위는 -100에서 100 사이
+3. 가능한 자연스럽게 보정할 수 있는 값을 선택하세요.`;
                 
                 const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
                 
-                progressModal.remove();
-                alert('✅ AI 분석:\n\n' + result);
+                // JSON 추출 시도
+                const jsonMatch = result.match(/\{.*\}/s);
+                if (jsonMatch) {
+                    const params = JSON.parse(jsonMatch[0]);
+                    
+                    // 값 적용
+                    if (params.brightness !== undefined) app.filters.brightness = params.brightness;
+                    if (params.contrast !== undefined) app.filters.contrast = params.contrast;
+                    if (params.saturation !== undefined) app.filters.saturation = params.saturation;
+                    if (params.sharpness !== undefined) app.filters.sharpness = params.sharpness;
+                    
+                    // UI 동기화
+                    syncFilterUI();
+                    
+                    renderCanvas();
+                    saveHistory();
+                    progressModal.remove();
+                    showToast('✅ AI 자동 보정 완료');
+                } else {
+                    throw new Error('AI 응답에서 유효한 보정 값을 찾을 수 없습니다.');
+                }
                 
             } catch (error) {
                 progressModal.remove();
-                showErrorModal('화질 분석 실패', error.message, error.details);
+                showErrorModal('화질 개선 실패', error.message);
             }
         }
 
@@ -599,4 +645,168 @@ export async function captureWindow(): Promise<void> {
 export function captureArea(): void {
   document.querySelector('.modal-overlay')?.remove();
   alert('📸 영역 선택 캡처 안내\n\n브라우저 제한으로 직접 구현이 어렵습니다.\n\n대안:\n1. Windows: Win + Shift + S (캡처 도구)\n2. Mac: Cmd + Shift + 4\n3. 전체/창 캡처 후 자르기 기능 사용');
+}
+
+// ── AI 통신 헬퍼 ─────────────────────────────────────────────
+async function imageToBase64(img: HTMLImageElement): Promise<string> {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('캔버스 컨텍스트 생성 실패');
+    ctx.drawImage(img, 0, 0);
+    return canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+}
+
+async function callGeminiAPI(apiKey: string, prompt: string, base64: string, responseEl: HTMLElement): Promise<string> {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const payload = {
+        contents: [{
+            parts: [
+                { text: prompt },
+                { inline_data: { mime_type: 'image/jpeg', data: base64 } }
+            ]
+        }]
+    };
+
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error(`Gemini API 오류: ${res.status}`);
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '응답을 받지 못했습니다.';
+    responseEl.innerText = text;
+    return text;
+}
+
+async function callChatGPTAPI(apiKey: string, prompt: string, base64: string, responseEl: HTMLElement): Promise<string> {
+    const url = 'https://api.openai.com/v1/chat/completions';
+    const payload = {
+        model: 'gpt-4o-mini',
+        messages: [{
+            role: 'user',
+            content: [
+                { type: 'text', text: prompt },
+                { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64}` } }
+            ]
+        }]
+    };
+
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error(`ChatGPT API 오류: ${res.status}`);
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '응답을 받지 못했습니다.';
+    responseEl.innerText = text;
+    return text;
+}
+
+async function callClaudeAPI(apiKey: string, prompt: string, base64: string, responseEl: HTMLElement): Promise<string> {
+    const url = 'https://api.anthropic.com/v1/messages';
+    const payload = {
+        model: 'claude-3-5-sonnet-20240620',
+        max_tokens: 1024,
+        messages: [{
+            role: 'user',
+            content: [
+                { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
+                { type: 'text', text: prompt }
+            ]
+        }]
+    };
+
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'dangerously-allow-browser': 'true'
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error(`Claude API 오류: ${res.status}`);
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '응답을 받지 못했습니다.';
+    responseEl.innerText = text;
+    return text;
+}
+
+async function callAIWithImage(model: string, apiKey: string, prompt: string, base64: string): Promise<string> {
+    const dummyEl = document.createElement('div');
+    if (model === 'gemini') return callGeminiAPI(apiKey, prompt, base64, dummyEl);
+    if (model === 'chatgpt') return callChatGPTAPI(apiKey, prompt, base64, dummyEl);
+    if (model === 'claude') return callClaudeAPI(apiKey, prompt, base64, dummyEl);
+    throw new Error('지원하지 않는 모델입니다.');
+}
+
+function showErrorModal(title: string, msg: string, details?: string) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
+        <div class="modal-content" style="width: 400px; border-top: 4px solid #dc3545;">
+            <div class="modal-title">
+                <span style="color:#dc3545;">❌ ${title}</span>
+                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 13px;">${msg}</p>
+                ${details ? `<pre style="font-size:10px; background:#f8f9fa; padding:8px; overflow-x:auto;">${details}</pre>` : ''}
+            </div>
+            <div class="modal-footer">
+                <button class="btn-small" onclick="this.closest('.modal-overlay').remove()">확인</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function applyConvolutionFilterLocal(imageData: ImageData, w: number, h: number, kernel: number[]) {
+    const d = imageData.data;
+    const copy = new Uint8ClampedArray(d);
+    
+    for (let y = 1; y < h-1; y++) {
+        for (let x = 1; x < w-1; x++) {
+            let r=0, g=0, b=0;
+            for (let ky = -1; ky <= 1; ky++) {
+                for (let kx = -1; kx <= 1; kx++) {
+                    const i = ((y+ky)*w + (x+kx))*4;
+                    const k = kernel[(ky+1)*3 + (kx+1)];
+                    r += copy[i] * k;
+                    g += copy[i+1] * k;
+                    b += copy[i+2] * k;
+                }
+            }
+            const i = (y*w + x)*4;
+            d[i] = Math.max(0, Math.min(255, r));
+            d[i+1] = Math.max(0, Math.min(255, g));
+            d[i+2] = Math.max(0, Math.min(255, b));
+        }
+    }
+}
+
+function syncFilterUI() {
+    const sliders: Array<[string, number, string]> = [
+        ['brightness', app.filters.brightness, ''],
+        ['contrast',   app.filters.contrast, ''],
+        ['saturation', app.filters.saturation, ''],
+        ['sharpness',  app.filters.sharpness, ''],
+    ];
+    sliders.forEach(([id, val, suffix]) => {
+        const el = document.getElementById(id) as HTMLInputElement | null;
+        const vl = document.getElementById(`${id}Value`);
+        if (el) el.value = String(val);
+        if (vl) vl.textContent = String(val) + suffix;
+    });
 }

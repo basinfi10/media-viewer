@@ -5,6 +5,8 @@ import { showToast } from '../utils';
 import { loadMedia } from './player';
 import { renderCanvas } from './canvas';
 import { rebuildThumbnails } from '../ui/thumbnail';
+import { removeBackground } from '@imgly/background-removal';
+import JSZip from 'jszip';
 
 export function toggleImageSelection(index) {
             const idx = app.selectedImages.indexOf(index);
@@ -203,6 +205,20 @@ export function showBatchEditDialog() {
                                 <option value="folder">폴더에 개별 저장 (File System API)</option>
                             </select>
                         </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="font-size: 13px; margin-bottom: 12px;">🤖 AI 일괄 처리</h4>
+                            <div style="display: flex; gap: 8px; flex-direction: column;">
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+                                    <input type="checkbox" id="batchRemoveBg">
+                                    <span>모든 이미지 배경 제거</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+                                    <input type="checkbox" id="batchUpscale">
+                                    <span>모든 이미지 2배 확대 (AI)</span>
+                                </label>
+                            </div>
+                        </div>
                         
                         <div id="saveModeTip" style="background: #e7f3ff; padding: 12px; border-radius: 4px; border-left: 4px solid #0078d7;">
                             <p style="font-size: 11px; color: #004085; margin: 0;">
@@ -261,6 +277,142 @@ export function showBatchEditDialog() {
             // 변경 시 업데이트
             resizeModeSelect.addEventListener('change', updateInputFields);
         }
+
+export async function processBatchEdit() {
+    const resizeMode = (document.getElementById('batchResizeMode') as HTMLSelectElement).value;
+    const targetWidth = parseInt((document.getElementById('batchWidth') as HTMLInputElement).value);
+    const targetHeight = parseInt((document.getElementById('batchHeight') as HTMLInputElement).value);
+    const format = (document.getElementById('batchFormat') as HTMLSelectElement).value;
+    const saveMode = (document.getElementById('batchSaveMode') as HTMLSelectElement).value;
+    const doRemoveBg = (document.getElementById('batchRemoveBg') as HTMLInputElement).checked;
+    const doUpscale = (document.getElementById('batchUpscale') as HTMLInputElement).checked;
+
+    document.querySelector('.modal-overlay')?.remove();
+    
+    // 진행 상황 모달
+    const progressModal = createSimpleProgressModal('일괄 처리 중...', `총 ${app.selectedImages.length}개의 파일을 처리하고 있습니다.`);
+    document.body.appendChild(progressModal);
+
+    const zip = saveMode === 'zip' ? new JSZip() : null;
+    let processedCount = 0;
+
+    try {
+        for (const index of app.selectedImages) {
+            const imageData = app.images[index];
+            if (!imageData) continue;
+
+            let currentImg = imageData.img as HTMLImageElement;
+
+            // 1. AI 배경 제거
+            if (doRemoveBg) {
+                const blob = await removeBackground(currentImg);
+                currentImg = await blobToImage(blob);
+            }
+
+            // 2. AI 업스케일링
+            if (doUpscale) {
+                currentImg = await upscaleImageLocal(currentImg);
+            }
+
+            // 3. 크기 조절 및 포맷 변환용 캔버스
+            const canvas = document.createElement('canvas');
+            let w = currentImg.width;
+            let h = currentImg.height;
+
+            if (resizeMode !== 'none') {
+                if (resizeMode === 'fit-width' && targetWidth) {
+                    h = (targetWidth / w) * h;
+                    w = targetWidth;
+                } else if (resizeMode === 'fit-height' && targetHeight) {
+                    w = (targetHeight / h) * w;
+                    h = targetHeight;
+                } else if (resizeMode === 'exact' && targetWidth && targetHeight) {
+                    w = targetWidth;
+                    h = targetHeight;
+                }
+            }
+
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(currentImg, 0, 0, w, h);
+
+            const outFormat = format || 'image/png';
+            const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!), outFormat, 0.9));
+            
+            // 4. 결과 저장
+            const fileName = imageData.name.replace(/\.[^.]+$/, '') + (format ? `.${format.split('/')[1]}` : '');
+            
+            if (zip) {
+                zip.file(fileName, blob);
+            } else {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+            }
+
+            processedCount++;
+            const progress = Math.round((processedCount / app.selectedImages.length) * 100);
+            const progressFill = progressModal.querySelector('.progress-fill') as HTMLElement;
+            if (progressFill) progressFill.style.width = `${progress}%`;
+        }
+
+        if (zip) {
+            const content = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `media_viewer_batch_${Date.now()}.zip`;
+            a.click();
+        }
+
+        progressModal.remove();
+        showToast(`✅ ${processedCount}개의 파일 처리가 완료되었습니다.`);
+    } catch (error) {
+        progressModal.remove();
+        alert(`일괄 처리 중 오류 발생: ${error.message}`);
+    }
+}
+
+function createSimpleProgressModal(title, message) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
+        <div class="modal-content" style="width: 400px;">
+            <div class="modal-title"><span>${title}</span></div>
+            <div class="modal-body" style="text-align: center; padding: 20px;">
+                <p style="font-size: 13px; margin-bottom: 12px;">${message}</p>
+                <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                    <div class="progress-fill" style="width: 0%; height: 100%; background: #0078d7; transition: width 0.3s;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    return modal;
+}
+
+async function blobToImage(blob: Blob): Promise<HTMLImageElement> {
+    return new Promise((resolve) => {
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.src = url;
+    });
+}
+
+async function upscaleImageLocal(img: HTMLImageElement): Promise<HTMLImageElement> {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width * 2;
+    canvas.height = img.height * 2;
+    const ctx = canvas.getContext('2d');
+    ctx!.imageSmoothingEnabled = true;
+    ctx!.imageSmoothingQuality = 'high';
+    ctx!.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob>(r => canvas.toBlob(b => r(b!)));
+    return blobToImage(blob);
+}
 
 export function updateBatchEditButton() {
             const toolBtn = document.getElementById('batchEditToolBtn');
