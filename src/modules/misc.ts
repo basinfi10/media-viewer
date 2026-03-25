@@ -255,7 +255,7 @@ export async function aiEnhance() {
 
     const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
     const defaultAI = settings.defaultAI || 'gemini';
-    const apiKey = defaultAI === 'gemini' ? settings.apiGemini :
+    const apiKey = (defaultAI === 'gemini' || defaultAI === 'gemini2') ? settings.apiGemini :
         defaultAI === 'chatgpt' ? settings.apiChatGPT :
             settings.apiClaude;
 
@@ -312,7 +312,7 @@ export async function aiColorize() {
 
     const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
     const defaultAI = settings.defaultAI || 'gemini';
-    const apiKey = defaultAI === 'gemini' ? settings.apiGemini :
+    const apiKey = (defaultAI === 'gemini' || defaultAI === 'gemini2') ? settings.apiGemini :
         defaultAI === 'chatgpt' ? settings.apiChatGPT :
             settings.apiClaude;
 
@@ -346,7 +346,7 @@ export async function aiObjectRemove() {
 
     const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
     const defaultAI = settings.defaultAI || 'gemini';
-    const apiKey = defaultAI === 'gemini' ? settings.apiGemini :
+    const apiKey = (defaultAI === 'gemini' || defaultAI === 'gemini2') ? settings.apiGemini :
         defaultAI === 'chatgpt' ? settings.apiChatGPT :
             settings.apiClaude;
 
