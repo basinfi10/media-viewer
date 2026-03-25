@@ -8,9 +8,9 @@ import { createThumbnailEl } from '../ui/thumbnail';
 import { removeBackground } from '@imgly/background-removal';
 
 export async function showCaptureMenu() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay active';
-            modal.innerHTML = `
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
                 <div class="modal-content" style="width: 400px;">
                     <div class="modal-title">
                         <span>📸 화면 캡처</span>
@@ -49,21 +49,21 @@ export async function showCaptureMenu() {
                     </div>
                 </div>
             `;
-            document.body.appendChild(modal);
-        }
+    document.body.appendChild(modal);
+}
 
 export function showAIPrompt() {
-            if (!app.currentImage) {
-                alert('이미지를 먼저 열어주세요.');
-                return;
-            }
+    if (!app.currentImage) {
+        alert('이미지를 먼저 열어주세요.');
+        return;
+    }
 
-            const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-            const defaultAI = settings.defaultAI || 'gemini';
+    const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
+    const defaultAI = settings.defaultAI || 'gemini';
 
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay active';
-            modal.innerHTML = `
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
                 <div class="modal-content" style="width: 600px; position: fixed; right: 20px; top: 100px; left: auto; transform: none;">
                     <div class="modal-title">
                         <span>🤖 AI 프롬프트</span>
@@ -84,9 +84,9 @@ export function showAIPrompt() {
                                 <span style="background: #0078d7; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-left: 8px;">기본: ${defaultAI === 'gemini' ? 'Gemini' : defaultAI === 'chatgpt' ? 'ChatGPT' : 'Claude'}</span>
                             </label>
                             <select id="aiModelSelect" style="width: 100%; padding: 6px; border: 1px solid #c0c0c0;">
-                                <option value="gemini" ${defaultAI==='gemini'?'selected':''}>🤖 Google Gemini ${defaultAI==='gemini'?'(기본)':''}</option>
-                                <option value="chatgpt" ${defaultAI==='chatgpt'?'selected':''}>💬 ChatGPT ${defaultAI==='chatgpt'?'(기본)':''}</option>
-                                <option value="claude" ${defaultAI==='claude'?'selected':''}>🎨 Claude ${defaultAI==='claude'?'(기본)':''}</option>
+                                <option value="gemini" ${defaultAI === 'gemini' ? 'selected' : ''}>🤖 Google Gemini ${defaultAI === 'gemini' ? '(기본)' : ''}</option>
+                                <option value="chatgpt" ${defaultAI === 'chatgpt' ? 'selected' : ''}>💬 ChatGPT ${defaultAI === 'chatgpt' ? '(기본)' : ''}</option>
+                                <option value="claude" ${defaultAI === 'claude' ? 'selected' : ''}>🎨 Claude ${defaultAI === 'claude' ? '(기본)' : ''}</option>
                             </select>
                         </div>
                         
@@ -101,281 +101,283 @@ export function showAIPrompt() {
                     </div>
                 </div>
             `;
-            document.body.appendChild(modal);
-        }
+    document.body.appendChild(modal);
+}
 
 export async function sendAIPrompt() {
-            const prompt = document.getElementById('aiPrompt').value;
-            const model = document.getElementById('aiModelSelect').value;
-            
-            if (!prompt.trim()) {
-                alert('프롬프트를 입력해주세요.');
-                return;
-            }
+    const prompt = document.getElementById('aiPrompt').value;
+    const model = document.getElementById('aiModelSelect').value;
 
-            const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-            const apiKey = model === 'gemini' ? settings.apiGemini : 
-                          model === 'chatgpt' ? settings.apiChatGPT : 
-                          settings.apiClaude;
+    if (!prompt.trim()) {
+        alert('프롬프트를 입력해주세요.');
+        return;
+    }
 
-            if (!apiKey) {
-                alert(`${model} API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.`);
-                return;
-            }
+    const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
+    const apiKey = model === 'gemini' ? settings.apiGemini :
+        model === 'chatgpt' ? settings.apiChatGPT :
+            settings.apiClaude;
 
-            const responseDiv = document.getElementById('aiResponse');
-            const responseText = document.getElementById('aiResponseText');
-            responseDiv.style.display = 'block';
-            responseText.innerHTML = '⏳ AI가 이미지를 분석하고 있습니다...';
+    if (!apiKey) {
+        alert(`${model} API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.`);
+        return;
+    }
 
-            try {
-                // 이미지를 base64로 변환
-                const imageBase64 = await imageToBase64(app.currentImage);
-                
-                if (model === 'gemini') {
-                    await callGeminiAPI(apiKey, prompt, imageBase64, responseText);
-                } else if (model === 'chatgpt') {
-                    await callChatGPTAPI(apiKey, prompt, imageBase64, responseText);
-                } else if (model === 'claude') {
-                    await callClaudeAPI(apiKey, prompt, imageBase64, responseText);
-                }
-            } catch (error) {
-                responseText.innerHTML = `
+    const responseDiv = document.getElementById('aiResponse');
+    const responseText = document.getElementById('aiResponseText');
+    responseDiv.style.display = 'block';
+    responseText.innerHTML = '⏳ AI가 이미지를 분석하고 있습니다...';
+
+    try {
+        // 이미지를 base64로 변환
+        const imageBase64 = await imageToBase64(app.currentImage);
+
+        if (model === 'gemini') {
+            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-1.5-flash');
+        } else if (model === 'gemini2') {
+            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-2.0-flash-exp');
+        } else if (model === 'chatgpt') {
+            await callChatGPTAPI(apiKey, prompt, imageBase64, responseText);
+        } else if (model === 'claude') {
+            await callClaudeAPI(apiKey, prompt, imageBase64, responseText);
+        }
+    } catch (error) {
+        responseText.innerHTML = `
                     <div style="color: #dc3545;">
                         <strong>❌ 오류 발생</strong>
                         <p style="margin-top: 8px; font-size: 11px;">${error.message}</p>
                         ${error.details ? `<pre style="margin-top: 8px; padding: 8px; background: #f8f8f8; border-radius: 4px; font-size: 10px; overflow-x: auto;">${error.details}</pre>` : ''}
                     </div>
                 `;
-            }
-        }
+    }
+}
 
 export async function aiUpscale() {
-            if (!app.currentImage) {
-                alert('이미지를 먼저 열어주세요.');
-                return;
-            }
-            
-            const progressModal = showProgressModal('이미지 확대 중...', 'AI 알고리즘을 사용하여 이미지를 2배 확대하고 디테일을 보존하고 있습니다.');
-            
-            try {
-                // 2배 확대 캔버스 생성
-                const original = app.currentImage;
-                const canvas = document.createElement('canvas');
-                canvas.width = original.width * 2;
-                canvas.height = original.height * 2;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) throw new Error('캔버스 실패');
-                
-                // 고품질 스케일링 설정
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(original, 0, 0, canvas.width, canvas.height);
-                
-                // 약간의 선명도 강화 (Convolution)
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const kernel = [
-                    0, -0.2, 0,
-                    -0.2, 1.8, -0.2,
-                    0, -0.2, 0
-                ];
-                applyConvolutionFilterLocal(imageData, canvas.width, canvas.height, kernel);
-                ctx.putImageData(imageData, 0, 0);
-                
-                const img = new Image();
-                img.onload = () => {
-                    app.canvas.width = img.width;
-                    app.canvas.height = img.height;
-                    app.ctx.drawImage(img, 0, 0);
-                    app.currentImage = img;
-                    app.originalImage = img;
-                    saveHistory();
-                    renderCanvas();
-                    progressModal.remove();
-                    showToast('✅ 2배 확대 완료');
-                };
-                img.src = canvas.toDataURL('image/png');
-                
-            } catch (error) {
-                progressModal.remove();
-                showErrorModal('확대 실패', error.message);
-            }
-        }
+    if (!app.currentImage) {
+        alert('이미지를 먼저 열어주세요.');
+        return;
+    }
+
+    const progressModal = showProgressModal('이미지 확대 중...', 'AI 알고리즘을 사용하여 이미지를 2배 확대하고 디테일을 보존하고 있습니다.');
+
+    try {
+        // 2배 확대 캔버스 생성
+        const original = app.currentImage;
+        const canvas = document.createElement('canvas');
+        canvas.width = original.width * 2;
+        canvas.height = original.height * 2;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('캔버스 실패');
+
+        // 고품질 스케일링 설정
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(original, 0, 0, canvas.width, canvas.height);
+
+        // 약간의 선명도 강화 (Convolution)
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const kernel = [
+            0, -0.2, 0,
+            -0.2, 1.8, -0.2,
+            0, -0.2, 0
+        ];
+        applyConvolutionFilterLocal(imageData, canvas.width, canvas.height, kernel);
+        ctx.putImageData(imageData, 0, 0);
+
+        const img = new Image();
+        img.onload = () => {
+            app.canvas.width = img.width;
+            app.canvas.height = img.height;
+            app.ctx.drawImage(img, 0, 0);
+            app.currentImage = img;
+            app.originalImage = img;
+            saveHistory();
+            renderCanvas();
+            progressModal.remove();
+            showToast('✅ 2배 확대 완료');
+        };
+        img.src = canvas.toDataURL('image/png');
+
+    } catch (error) {
+        progressModal.remove();
+        showErrorModal('확대 실패', error.message);
+    }
+}
 
 export async function aiRemoveBackground() {
-            if (!app.currentImage) {
-                alert('이미지를 먼저 열어주세요.');
-                return;
+    if (!app.currentImage) {
+        alert('이미지를 먼저 열어주세요.');
+        return;
+    }
+
+    // 진행 중 팝업 표시
+    const progressModal = showProgressModal('배경 제거 중...', 'AI가 이미지 배경을 제거하고 있습니다. (처음 실행 시 데이터 로드로 시간이 걸릴 수 있습니다)');
+
+    try {
+        // 실제 배경 제거 라이브러리 호출
+        const blob = await removeBackground(app.currentImage, {
+            progress: (step, progress) => {
+                console.log(`Background removal: ${step} (${Math.round(progress * 100)}%)`);
             }
-            
-            // 진행 중 팝업 표시
-            const progressModal = showProgressModal('배경 제거 중...', 'AI가 이미지 배경을 제거하고 있습니다. (처음 실행 시 데이터 로드로 시간이 걸릴 수 있습니다)');
-            
-            try {
-                // 실제 배경 제거 라이브러리 호출
-                const blob = await removeBackground(app.currentImage, {
-                    progress: (step, progress) => {
-                        console.log(`Background removal: ${step} (${Math.round(progress * 100)}%)`);
-                    }
-                });
-                
-                const url = URL.createObjectURL(blob);
-                const img = new Image();
-                img.onload = () => {
-                    // 캔버스 크기 조정 및 그리기
-                    app.canvas.width = img.width;
-                    app.canvas.height = img.height;
-                    app.ctx.clearRect(0, 0, app.canvas.width, app.canvas.height);
-                    app.ctx.drawImage(img, 0, 0);
-                    
-                    // 상태 업데이트
-                    app.currentImage = img;
-                    app.originalImage = img;
-                    saveHistory();
-                    renderCanvas();
-                    
-                    progressModal.remove();
-                    showToast('✅ 배경 제거 완료');
-                };
-                img.src = url;
-                
-            } catch (error) {
-                progressModal.remove();
-                showErrorModal('배경 제거 실패', error.message);
-            }
-        }
+        });
+
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => {
+            // 캔버스 크기 조정 및 그리기
+            app.canvas.width = img.width;
+            app.canvas.height = img.height;
+            app.ctx.clearRect(0, 0, app.canvas.width, app.canvas.height);
+            app.ctx.drawImage(img, 0, 0);
+
+            // 상태 업데이트
+            app.currentImage = img;
+            app.originalImage = img;
+            saveHistory();
+            renderCanvas();
+
+            progressModal.remove();
+            showToast('✅ 배경 제거 완료');
+        };
+        img.src = url;
+
+    } catch (error) {
+        progressModal.remove();
+        showErrorModal('배경 제거 실패', error.message);
+    }
+}
 
 export async function aiEnhance() {
-            if (!app.currentImage) {
-                alert('이미지를 먼저 열어주세요.');
-                return;
-            }
-            
-            const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-            const defaultAI = settings.defaultAI || 'gemini';
-            const apiKey = defaultAI === 'gemini' ? settings.apiGemini : 
-                          defaultAI === 'chatgpt' ? settings.apiChatGPT : 
-                          settings.apiClaude;
-            
-            if (!apiKey) {
-                alert('AI API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.');
-                return;
-            }
-            
-            const progressModal = showProgressModal('화질 개선 분석 중...', 'AI가 이미지를 분석하여 최적의 보정 값을 찾고 있습니다.');
-            
-            try {
-                const imageBase64 = await imageToBase64(app.currentImage);
-                const prompt = `이 이미지를 분석하여 가장 잘 어울리는 보정 값을 JSON 형식으로만 응답해주세요. 
+    if (!app.currentImage) {
+        alert('이미지를 먼저 열어주세요.');
+        return;
+    }
+
+    const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
+    const defaultAI = settings.defaultAI || 'gemini';
+    const apiKey = defaultAI === 'gemini' ? settings.apiGemini :
+        defaultAI === 'chatgpt' ? settings.apiChatGPT :
+            settings.apiClaude;
+
+    if (!apiKey) {
+        alert('AI API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.');
+        return;
+    }
+
+    const progressModal = showProgressModal('화질 개선 분석 중...', 'AI가 이미지를 분석하여 최적의 보정 값을 찾고 있습니다.');
+
+    try {
+        const imageBase64 = await imageToBase64(app.currentImage);
+        const prompt = `이 이미지를 분석하여 가장 잘 어울리는 보정 값을 JSON 형식으로만 응답해주세요. 
 규칙: 
 1. {"brightness": 숫자, "contrast": 숫자, "saturation": 숫자, "sharpness": 숫자} 형식
 2. 각 숫자의 범위는 -100에서 100 사이
 3. 가능한 자연스럽게 보정할 수 있는 값을 선택하세요.`;
-                
-                const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
-                
-                // JSON 추출 시도
-                const jsonMatch = result.match(/\{.*\}/s);
-                if (jsonMatch) {
-                    const params = JSON.parse(jsonMatch[0]);
-                    
-                    // 값 적용
-                    if (params.brightness !== undefined) app.filters.brightness = params.brightness;
-                    if (params.contrast !== undefined) app.filters.contrast = params.contrast;
-                    if (params.saturation !== undefined) app.filters.saturation = params.saturation;
-                    if (params.sharpness !== undefined) app.filters.sharpness = params.sharpness;
-                    
-                    // UI 동기화
-                    syncFilterUI();
-                    
-                    renderCanvas();
-                    saveHistory();
-                    progressModal.remove();
-                    showToast('✅ AI 자동 보정 완료');
-                } else {
-                    throw new Error('AI 응답에서 유효한 보정 값을 찾을 수 없습니다.');
-                }
-                
-            } catch (error) {
-                progressModal.remove();
-                showErrorModal('화질 개선 실패', error.message);
-            }
+
+        const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
+
+        // JSON 추출 시도
+        const jsonMatch = result.match(/\{.*\}/s);
+        if (jsonMatch) {
+            const params = JSON.parse(jsonMatch[0]);
+
+            // 값 적용
+            if (params.brightness !== undefined) app.filters.brightness = params.brightness;
+            if (params.contrast !== undefined) app.filters.contrast = params.contrast;
+            if (params.saturation !== undefined) app.filters.saturation = params.saturation;
+            if (params.sharpness !== undefined) app.filters.sharpness = params.sharpness;
+
+            // UI 동기화
+            syncFilterUI();
+
+            renderCanvas();
+            saveHistory();
+            progressModal.remove();
+            showToast('✅ AI 자동 보정 완료');
+        } else {
+            throw new Error('AI 응답에서 유효한 보정 값을 찾을 수 없습니다.');
         }
+
+    } catch (error) {
+        progressModal.remove();
+        showErrorModal('화질 개선 실패', error.message);
+    }
+}
 
 export async function aiColorize() {
-            if (!app.currentImage) {
-                alert('이미지를 먼저 열어주세요.');
-                return;
-            }
-            
-            const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-            const defaultAI = settings.defaultAI || 'gemini';
-            const apiKey = defaultAI === 'gemini' ? settings.apiGemini : 
-                          defaultAI === 'chatgpt' ? settings.apiChatGPT : 
-                          settings.apiClaude;
-            
-            if (!apiKey) {
-                alert('AI API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.');
-                return;
-            }
-            
-            const progressModal = showProgressModal('컬러화 진행 중...', 'AI가 흑백 이미지를 분석하고 자연스러운 색상을 추천하고 있습니다.');
-            
-            try {
-                const imageBase64 = await imageToBase64(app.currentImage);
-                const prompt = '이 이미지가 흑백이라면, 각 요소에 어떤 색상을 입히면 자연스러울지 상세히 설명해주세요.';
-                
-                const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
-                
-                progressModal.remove();
-                alert('✅ AI 색상 추천:\n\n' + result);
-                
-            } catch (error) {
-                progressModal.remove();
-                showErrorModal('컬러화 분석 실패', error.message, error.details);
-            }
-        }
+    if (!app.currentImage) {
+        alert('이미지를 먼저 열어주세요.');
+        return;
+    }
+
+    const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
+    const defaultAI = settings.defaultAI || 'gemini';
+    const apiKey = defaultAI === 'gemini' ? settings.apiGemini :
+        defaultAI === 'chatgpt' ? settings.apiChatGPT :
+            settings.apiClaude;
+
+    if (!apiKey) {
+        alert('AI API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.');
+        return;
+    }
+
+    const progressModal = showProgressModal('컬러화 진행 중...', 'AI가 흑백 이미지를 분석하고 자연스러운 색상을 추천하고 있습니다.');
+
+    try {
+        const imageBase64 = await imageToBase64(app.currentImage);
+        const prompt = '이 이미지가 흑백이라면, 각 요소에 어떤 색상을 입히면 자연스러울지 상세히 설명해주세요.';
+
+        const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
+
+        progressModal.remove();
+        alert('✅ AI 색상 추천:\n\n' + result);
+
+    } catch (error) {
+        progressModal.remove();
+        showErrorModal('컬러화 분석 실패', error.message, error.details);
+    }
+}
 
 export async function aiObjectRemove() {
-            if (!app.currentImage) {
-                alert('이미지를 먼저 열어주세요.');
-                return;
-            }
-            
-            const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-            const defaultAI = settings.defaultAI || 'gemini';
-            const apiKey = defaultAI === 'gemini' ? settings.apiGemini : 
-                          defaultAI === 'chatgpt' ? settings.apiChatGPT : 
-                          settings.apiClaude;
-            
-            if (!apiKey) {
-                alert('AI API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.');
-                return;
-            }
-            
-            const progressModal = showProgressModal('객체 제거 중...', 'AI가 선택된 객체를 자연스럽게 제거하고 있습니다.');
-            
-            try {
-                const imageBase64 = await imageToBase64(app.currentImage);
-                const prompt = '이 이미지에서 제거할 수 있는 객체들을 식별하고, 각 객체를 제거하는 방법을 설명해주세요.';
-                
-                const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
-                
-                progressModal.remove();
-                alert('✅ AI 분석:\n\n' + result + '\n\n참고: 실제 객체 제거는 전문 편집 API가 필요합니다.');
-                
-            } catch (error) {
-                progressModal.remove();
-                showErrorModal('객체 제거 실패', error.message, error.details);
-            }
-        }
+    if (!app.currentImage) {
+        alert('이미지를 먼저 열어주세요.');
+        return;
+    }
+
+    const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
+    const defaultAI = settings.defaultAI || 'gemini';
+    const apiKey = defaultAI === 'gemini' ? settings.apiGemini :
+        defaultAI === 'chatgpt' ? settings.apiChatGPT :
+            settings.apiClaude;
+
+    if (!apiKey) {
+        alert('AI API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.');
+        return;
+    }
+
+    const progressModal = showProgressModal('객체 제거 중...', 'AI가 선택된 객체를 자연스럽게 제거하고 있습니다.');
+
+    try {
+        const imageBase64 = await imageToBase64(app.currentImage);
+        const prompt = '이 이미지에서 제거할 수 있는 객체들을 식별하고, 각 객체를 제거하는 방법을 설명해주세요.';
+
+        const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
+
+        progressModal.remove();
+        alert('✅ AI 분석:\n\n' + result + '\n\n참고: 실제 객체 제거는 전문 편집 API가 필요합니다.');
+
+    } catch (error) {
+        progressModal.remove();
+        showErrorModal('객체 제거 실패', error.message, error.details);
+    }
+}
 
 export function showSettings() {
-            const s = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-            
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay active';
-            modal.innerHTML = `
+    const s = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
                 <div class="modal-content" style="width: 500px;">
                     <div class="modal-title">
                         <span>⚙️ 환경 설정</span>
@@ -385,9 +387,9 @@ export function showSettings() {
                         <h3 style="font-size: 13px; margin-bottom: 8px;">⚙️ 기본 설정</h3>
                         <label style="font-size: 12px; display: block; margin-bottom: 4px;">기본 저장 포맷</label>
                         <select id="defFmt" style="width: 100%; padding: 6px; border: 1px solid #c0c0c0; margin-bottom: 12px;">
-                            <option value="image/png" ${s.defFmt==='image/png'?'selected':''}>PNG</option>
-                            <option value="image/jpeg" ${s.defFmt==='image/jpeg'?'selected':''}>JPEG</option>
-                            <option value="image/webp" ${s.defFmt==='image/webp'?'selected':''}>WebP</option>
+                            <option value="image/png" ${s.defFmt === 'image/png' ? 'selected' : ''}>PNG</option>
+                            <option value="image/jpeg" ${s.defFmt === 'image/jpeg' ? 'selected' : ''}>JPEG</option>
+                            <option value="image/webp" ${s.defFmt === 'image/webp' ? 'selected' : ''}>WebP</option>
                         </select>
                         <hr style="margin: 16px 0; border: none; border-top: 1px solid #e0e0e0;">
                         <button class="btn-small" style="width: 100%;" onclick="this.closest('.modal-overlay').remove(); manageAIKeys();">
@@ -400,26 +402,26 @@ export function showSettings() {
                     </div>
                 </div>
             `;
-            document.body.appendChild(modal);
-        }
+    document.body.appendChild(modal);
+}
 
 export function saveSettings() {
-            const s = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-            s.defFmt = document.getElementById('defFmt').value;
-            localStorage.setItem('imgViewerSettings', JSON.stringify(s));
-            alert('설정이 저장되었습니다.');
-            document.querySelector('.modal-overlay').remove();
-        }
+    const s = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
+    s.defFmt = document.getElementById('defFmt').value;
+    localStorage.setItem('imgViewerSettings', JSON.stringify(s));
+    alert('설정이 저장되었습니다.');
+    document.querySelector('.modal-overlay').remove();
+}
 
 export async function saveImageAs() {
-            if (!app.currentImage) {
-                alert('저장할 이미지가 없습니다.');
-                return;
-            }
+    if (!app.currentImage) {
+        alert('저장할 이미지가 없습니다.');
+        return;
+    }
 
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay active';
-            modal.innerHTML = `
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
                 <div class="modal-content" style="width: 450px;">
                     <div class="modal-title">
                         <span>다른 이름으로 저장</span>
@@ -452,51 +454,51 @@ export async function saveImageAs() {
                     </div>
                 </div>
             `;
-            
-            document.body.appendChild(modal);
-            
-            const formatSelect = document.getElementById('saveFormat');
-            const qualityControl = document.getElementById('qualityControl');
-            const qualitySlider = document.getElementById('saveQuality');
-            const qualityValue = document.getElementById('qualityValue');
-            
-            formatSelect.addEventListener('change', function() {
-                if (this.value === 'image/jpeg' || this.value === 'image/webp') {
-                    qualityControl.style.display = 'block';
-                } else {
-                    qualityControl.style.display = 'none';
-                }
-            });
-            
-            qualitySlider.addEventListener('input', function() {
-                qualityValue.textContent = this.value;
-            });
+
+    document.body.appendChild(modal);
+
+    const formatSelect = document.getElementById('saveFormat');
+    const qualityControl = document.getElementById('qualityControl');
+    const qualitySlider = document.getElementById('saveQuality');
+    const qualityValue = document.getElementById('qualityValue');
+
+    formatSelect.addEventListener('change', function () {
+        if (this.value === 'image/jpeg' || this.value === 'image/webp') {
+            qualityControl.style.display = 'block';
+        } else {
+            qualityControl.style.display = 'none';
         }
+    });
+
+    qualitySlider.addEventListener('input', function () {
+        qualityValue.textContent = this.value;
+    });
+}
 
 export async function printImage() {
-            if (!app.currentImage) {
-                alert('인쇄할 이미지가 없습니다.');
-                return;
-            }
+    if (!app.currentImage) {
+        alert('인쇄할 이미지가 없습니다.');
+        return;
+    }
 
-            const exportCanvas = document.createElement('canvas');
-            exportCanvas.width = app.currentImage.width;
-            exportCanvas.height = app.currentImage.height;
-            const exportCtx = exportCanvas.getContext('2d');
-            const filtered = applyFilters(app.currentImage);
-            exportCtx.drawImage(filtered, 0, 0);
-            
-            const printWindow = window.open('', '_blank');
-            
-            if (!printWindow) {
-                alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
-                return;
-            }
-            
-            const scriptTag = '<' + 'script>';
-            const scriptEndTag = '<' + '/script>';
-            
-            printWindow.document.write(`
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = app.currentImage.width;
+    exportCanvas.height = app.currentImage.height;
+    const exportCtx = exportCanvas.getContext('2d');
+    const filtered = applyFilters(app.currentImage);
+    exportCtx.drawImage(filtered, 0, 0);
+
+    const printWindow = window.open('', '_blank');
+
+    if (!printWindow) {
+        alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+        return;
+    }
+
+    const scriptTag = '<' + 'script>';
+    const scriptEndTag = '<' + '/script>';
+
+    printWindow.document.write(`
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -537,13 +539,13 @@ export async function printImage() {
                 </body>
                 </html>
             `);
-            printWindow.document.close();
-        }
+    printWindow.document.close();
+}
 
 export function showProgressModal(title, message) {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay active';
-            modal.innerHTML = `
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
                 <div class="modal-content" style="width: 400px;">
                     <div class="modal-title">
                         <span>${title}</span>
@@ -566,85 +568,85 @@ export function showProgressModal(title, message) {
                     }
                 </style>
             `;
-            document.body.appendChild(modal);
-            return modal;
-        }
+    document.body.appendChild(modal);
+    return modal;
+}
 
 export function startSlideshow() {
-            alert('슬라이드쇼 기능 구현 중입니다.\n곧 업데이트 예정입니다.');
-        }
+    alert('슬라이드쇼 기능 구현 중입니다.\n곧 업데이트 예정입니다.');
+}
 
 // ── 화면 캡처 기능 ────────────────────────────────────────────
 async function captureScreen(filename: string): Promise<void> {
-  try {
-    const stream = await (navigator.mediaDevices as MediaDevices & {
-      getDisplayMedia: (opts: object) => Promise<MediaStream>;
-    }).getDisplayMedia({ video: { cursor: 'always' }, audio: false });
+    try {
+        const stream = await (navigator.mediaDevices as MediaDevices & {
+            getDisplayMedia: (opts: object) => Promise<MediaStream>;
+        }).getDisplayMedia({ video: { cursor: 'always' }, audio: false });
 
-    const video = document.createElement('video');
-    video.srcObject = stream;
+        const video = document.createElement('video');
+        video.srcObject = stream;
 
-    video.onloadedmetadata = () => {
-      video.play();
-      setTimeout(() => {
-        const tmp = document.createElement('canvas');
-        tmp.width  = video.videoWidth;
-        tmp.height = video.videoHeight;
-        tmp.getContext('2d')!.drawImage(video, 0, 0);
-        stream.getTracks().forEach(t => t.stop());
+        video.onloadedmetadata = () => {
+            video.play();
+            setTimeout(() => {
+                const tmp = document.createElement('canvas');
+                tmp.width = video.videoWidth;
+                tmp.height = video.videoHeight;
+                tmp.getContext('2d')!.drawImage(video, 0, 0);
+                stream.getTracks().forEach(t => t.stop());
 
-        const img = new Image();
-        img.onload = () => {
-          tmp.toBlob(blob => {
-            if (!blob) return;
-            const file = new File([blob], filename, { type: 'image/png' });
-            const data = {
-              file, name: file.name, img,
-              width: img.width, height: img.height,
-              size: blob.size, format: 'image/png',
-              type: 'image', modified: false,
-            };
-            app.images.push(data as typeof app.images[0]);
-            // 썸네일 패널에 추가 후 해당 이미지 로드
-            createThumbnailEl(app.images.length - 1);
-            loadMedia(app.images.length - 1);
-            // 모달 닫기
-            document.querySelector('.modal-overlay')?.remove();
-            document.getElementById('dropZone')?.classList.add('hidden');
-            document.querySelector('.image-container')?.classList.remove('hidden');
-            window.focus();
-            showToast(`📸 캡처 완료: ${file.name}`);
-          });
+                const img = new Image();
+                img.onload = () => {
+                    tmp.toBlob(blob => {
+                        if (!blob) return;
+                        const file = new File([blob], filename, { type: 'image/png' });
+                        const data = {
+                            file, name: file.name, img,
+                            width: img.width, height: img.height,
+                            size: blob.size, format: 'image/png',
+                            type: 'image', modified: false,
+                        };
+                        app.images.push(data as typeof app.images[0]);
+                        // 썸네일 패널에 추가 후 해당 이미지 로드
+                        createThumbnailEl(app.images.length - 1);
+                        loadMedia(app.images.length - 1);
+                        // 모달 닫기
+                        document.querySelector('.modal-overlay')?.remove();
+                        document.getElementById('dropZone')?.classList.add('hidden');
+                        document.querySelector('.image-container')?.classList.remove('hidden');
+                        window.focus();
+                        showToast(`📸 캡처 완료: ${file.name}`);
+                    });
+                };
+                img.src = tmp.toDataURL();
+            }, 500);
         };
-        img.src = tmp.toDataURL();
-      }, 500);
-    };
-  } catch (err: unknown) {
-    const e = err as DOMException;
-    if (e.name === 'NotAllowedError' && !e.message.includes('permissions policy')) return; // 사용자 취소
-    let msg = '화면 캡처를 시작할 수 없습니다.\n\n';
-    if (e.name === 'NotAllowedError') {
-      msg += '⚠️ 브라우저 보안 정책으로 차단되었습니다.\n\nHTML 파일을 로컬에서 실행하거나\nOS 단축키를 사용하세요:\n• Windows: Win + Shift + S\n• Mac: Cmd + Shift + 4';
-    } else if (e.name === 'NotSupportedError') {
-      msg += '⚠️ 이 브라우저는 화면 캡처를 지원하지 않습니다.\n(Chrome 72+ / Edge 79+ / Firefox 66+ 필요)';
-    } else {
-      msg += `오류: ${e.name}\n${e.message}`;
+    } catch (err: unknown) {
+        const e = err as DOMException;
+        if (e.name === 'NotAllowedError' && !e.message.includes('permissions policy')) return; // 사용자 취소
+        let msg = '화면 캡처를 시작할 수 없습니다.\n\n';
+        if (e.name === 'NotAllowedError') {
+            msg += '⚠️ 브라우저 보안 정책으로 차단되었습니다.\n\nHTML 파일을 로컬에서 실행하거나\nOS 단축키를 사용하세요:\n• Windows: Win + Shift + S\n• Mac: Cmd + Shift + 4';
+        } else if (e.name === 'NotSupportedError') {
+            msg += '⚠️ 이 브라우저는 화면 캡처를 지원하지 않습니다.\n(Chrome 72+ / Edge 79+ / Firefox 66+ 필요)';
+        } else {
+            msg += `오류: ${e.name}\n${e.message}`;
+        }
+        alert(msg);
     }
-    alert(msg);
-  }
 }
 
 export async function captureFullScreen(): Promise<void> {
-  await captureScreen(`screen_${Date.now()}.png`);
+    await captureScreen(`screen_${Date.now()}.png`);
 }
 
 export async function captureWindow(): Promise<void> {
-  await captureScreen(`window_${Date.now()}.png`);
+    await captureScreen(`window_${Date.now()}.png`);
 }
 
 export function captureArea(): void {
-  document.querySelector('.modal-overlay')?.remove();
-  alert('📸 영역 선택 캡처 안내\n\n브라우저 제한으로 직접 구현이 어렵습니다.\n\n대안:\n1. Windows: Win + Shift + S (캡처 도구)\n2. Mac: Cmd + Shift + 4\n3. 전체/창 캡처 후 자르기 기능 사용');
+    document.querySelector('.modal-overlay')?.remove();
+    alert('📸 영역 선택 캡처 안내\n\n브라우저 제한으로 직접 구현이 어렵습니다.\n\n대안:\n1. Windows: Win + Shift + S (캡처 도구)\n2. Mac: Cmd + Shift + 4\n3. 전체/창 캡처 후 자르기 기능 사용');
 }
 
 // ── AI 통신 헬퍼 ─────────────────────────────────────────────
@@ -658,8 +660,8 @@ async function imageToBase64(img: HTMLImageElement): Promise<string> {
     return canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 }
 
-async function callGeminiAPI(apiKey: string, prompt: string, base64: string, responseEl: HTMLElement): Promise<string> {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+async function callGeminiAPI(apiKey: string, prompt: string, base64: string, responseEl: HTMLElement, modelVariant: string = 'gemini-1.5-flash'): Promise<string> {
+    const url = `https://generativelanguage.googleapis.com/v1/models/${modelVariant}:generateContent?key=${apiKey}`;
     const payload = {
         contents: [{
             parts: [
@@ -745,7 +747,8 @@ async function callClaudeAPI(apiKey: string, prompt: string, base64: string, res
 
 async function callAIWithImage(model: string, apiKey: string, prompt: string, base64: string): Promise<string> {
     const dummyEl = document.createElement('div');
-    if (model === 'gemini') return callGeminiAPI(apiKey, prompt, base64, dummyEl);
+    if (model === 'gemini') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-1.5-flash');
+    if (model === 'gemini2') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-2.0-flash-exp');
     if (model === 'chatgpt') return callChatGPTAPI(apiKey, prompt, base64, dummyEl);
     if (model === 'claude') return callClaudeAPI(apiKey, prompt, base64, dummyEl);
     throw new Error('지원하지 않는 모델입니다.');
@@ -775,23 +778,23 @@ function showErrorModal(title: string, msg: string, details?: string) {
 function applyConvolutionFilterLocal(imageData: ImageData, w: number, h: number, kernel: number[]) {
     const d = imageData.data;
     const copy = new Uint8ClampedArray(d);
-    
-    for (let y = 1; y < h-1; y++) {
-        for (let x = 1; x < w-1; x++) {
-            let r=0, g=0, b=0;
+
+    for (let y = 1; y < h - 1; y++) {
+        for (let x = 1; x < w - 1; x++) {
+            let r = 0, g = 0, b = 0;
             for (let ky = -1; ky <= 1; ky++) {
                 for (let kx = -1; kx <= 1; kx++) {
-                    const i = ((y+ky)*w + (x+kx))*4;
-                    const k = kernel[(ky+1)*3 + (kx+1)];
+                    const i = ((y + ky) * w + (x + kx)) * 4;
+                    const k = kernel[(ky + 1) * 3 + (kx + 1)];
                     r += copy[i] * k;
-                    g += copy[i+1] * k;
-                    b += copy[i+2] * k;
+                    g += copy[i + 1] * k;
+                    b += copy[i + 2] * k;
                 }
             }
-            const i = (y*w + x)*4;
+            const i = (y * w + x) * 4;
             d[i] = Math.max(0, Math.min(255, r));
-            d[i+1] = Math.max(0, Math.min(255, g));
-            d[i+2] = Math.max(0, Math.min(255, b));
+            d[i + 1] = Math.max(0, Math.min(255, g));
+            d[i + 2] = Math.max(0, Math.min(255, b));
         }
     }
 }
@@ -799,9 +802,9 @@ function applyConvolutionFilterLocal(imageData: ImageData, w: number, h: number,
 function syncFilterUI() {
     const sliders: Array<[string, number, string]> = [
         ['brightness', app.filters.brightness, ''],
-        ['contrast',   app.filters.contrast, ''],
+        ['contrast', app.filters.contrast, ''],
         ['saturation', app.filters.saturation, ''],
-        ['sharpness',  app.filters.sharpness, ''],
+        ['sharpness', app.filters.sharpness, ''],
     ];
     sliders.forEach(([id, val, suffix]) => {
         const el = document.getElementById(id) as HTMLInputElement | null;
@@ -826,13 +829,16 @@ export function manageAIKeys() {
                     <h4 style="font-size: 13px; margin-bottom: 12px;">🤖 기본 서비스 선택</h4>
                     <div style="display: flex; gap: 16px;">
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
-                            <input type="radio" name="defaultAI" value="gemini" ${s.defaultAI === 'gemini' || !s.defaultAI ? 'checked' : ''}> Google Gemini
+                            <input type="radio" name="defaultAI" value="gemini" ${s.defaultAI === 'gemini' || !s.defaultAI ? 'checked' : ''}> Gemini 1.5
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer; color: #0078d7; font-weight: bold;">
+                            <input type="radio" name="defaultAI" value="gemini2" ${s.defaultAI === 'gemini2' ? 'checked' : ''}> Gemini 2.0 (추천)
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
-                            <input type="radio" name="defaultAI" value="chatgpt" ${s.defaultAI === 'chatgpt' ? 'checked' : ''}> OpenAI ChatGPT
+                            <input type="radio" name="defaultAI" value="chatgpt" ${s.defaultAI === 'chatgpt' ? 'checked' : ''}> ChatGPT
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
-                            <input type="radio" name="defaultAI" value="claude" ${s.defaultAI === 'claude' ? 'checked' : ''}> Anthropic Claude
+                            <input type="radio" name="defaultAI" value="claude" ${s.defaultAI === 'claude' ? 'checked' : ''}> Claude
                         </label>
                     </div>
                 </div>
@@ -856,7 +862,7 @@ export function manageAIKeys() {
                 <div style="background: #fff3cd; padding: 12px; border-radius: 4px; border: 1px solid #ffeeba;">
                     <p style="font-size: 11px; color: #856404; margin: 0;">
                         ⚠️ API 키는 브라우저의 로컬 저장소(localStorage)에만 저장됩니다. <br>
-                        ⚠️ 지원 모델: Gemini 1.5 Flash, GPT-4o-mini, Claude 3.5 Sonnet
+                        ⚠️ 지원 모델: Gemini 1.5 Flash, Gemini 2.0 Flash Exp, GPT-4o-mini, Claude 3.5 Sonnet
                     </p>
                 </div>
             </div>
@@ -873,7 +879,7 @@ export function manageAIKeys() {
 
 export function saveAIKeys() {
     const s = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
-    
+
     const defaultAI = (document.querySelector('input[name="defaultAI"]:checked') as HTMLInputElement)?.value;
     const apiGemini = (document.getElementById('apiGemini') as HTMLInputElement).value;
     const apiChatGPT = (document.getElementById('apiChatGPT') as HTMLInputElement).value;
