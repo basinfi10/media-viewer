@@ -133,23 +133,36 @@ export async function sendAIPrompt() {
         const imageBase64 = await imageToBase64(app.currentImage);
         let result = '';
 
+        // 이미지를 수정하거나 생성하는 경우에 대한 명시적 지침 추가
+        const enhancedPrompt = `${prompt}\n\n[System Instruction: 만약 이미지를 수정하거나 새로운 디자인 예시를 보여줘야 한다면, 반드시 해당 이미지를 'data:image/png;base64,'로 시작하는 base64 문자열 형식으로 응답 본문에 포함해 주세요. 텍스트 설명과 함께 이미지를 보내주시면 감사하겠습니다.]`;
+
         if (model === 'gemini') {
-            result = await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-2.5-flash-image');
+            result = await callGeminiAPI(apiKey, enhancedPrompt, imageBase64, responseText, 'gemini-1.5-flash');
         } else if (model === 'gemini2') {
-            result = await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-1.5-flash-8b');
+            result = await callGeminiAPI(apiKey, enhancedPrompt, imageBase64, responseText, 'gemini-2.0-flash-exp');
         } else if (model === 'chatgpt') {
-            result = await callChatGPTAPI(apiKey, prompt, imageBase64, responseText);
+            result = await callChatGPTAPI(apiKey, enhancedPrompt, imageBase64, responseText);
         } else if (model === 'claude') {
-            result = await callClaudeAPI(apiKey, prompt, imageBase64, responseText);
+            result = await callClaudeAPI(apiKey, enhancedPrompt, imageBase64, responseText);
         }
 
-        // 결과에 이미지 데이터가 포함되어 있는지 확인 (Markdown 또는 base64)
-        const base64Match = result.match(/data:image\/[a-zA-Z]*;base64,([^"'\s)>]+)/);
-        const rawBase64Match = result.match(/[A-Za-z0-9+/]{100,}/); // 긴 base64 문자열
+        // 결과에 이미지 데이터가 포함되어 있는지 확인 (Markdown, URL style, or raw base64)
+        const base64Regex = /(?:data:image\/[a-zA-Z]*;base64,)?(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})/g;
+        const matches = result.match(/data:image\/[a-zA-Z]*;base64,[^"'\s)>]+/g) || 
+                        result.match(/!\[.*?\]\((data:image\/.*?;base64,.*?)\)/g);
+        
+        let dataUrl = '';
+        if (matches && matches.length > 0) {
+            dataUrl = matches[0].replace(/!\[.*?\]\((.*?)\)/, '$1');
+        } else {
+            // 아주 긴 base64 문자열 검색 (최소 1000자 이상으로 제한하여 오탐 방지)
+            const longBase64 = result.match(/[A-Za-z0-9+/]{1000,}/);
+            if (longBase64) {
+                dataUrl = `data:image/png;base64,${longBase64[0]}`;
+            }
+        }
 
-        if (base64Match || rawBase64Match) {
-            const dataUrl = base64Match ? base64Match[0] : `data:image/png;base64,${rawBase64Match[0]}`;
-            
+        if (dataUrl) {
             const img = new Image();
             img.onload = () => {
                 app.canvas.width = img.width;
@@ -161,16 +174,20 @@ export async function sendAIPrompt() {
                 renderCanvas();
                 showToast('✅ AI 생성 이미지 적용 완료');
                 
-                // 결과창에 이미지 표시
+                // 결과창에 이미지 표시 (기존 텍스트 뒤에 추가)
                 const imgPreview = document.createElement('img');
                 imgPreview.src = dataUrl;
                 imgPreview.style.maxWidth = '100%';
                 imgPreview.style.marginTop = '10px';
                 imgPreview.style.borderRadius = '4px';
+                imgPreview.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
                 imgPreview.style.cursor = 'pointer';
                 imgPreview.title = '클릭하면 크게 봅니다';
                 imgPreview.onclick = () => window.open(dataUrl);
                 responseText.appendChild(imgPreview);
+            };
+            img.onerror = () => {
+                console.error('AI image load failed');
             };
             img.src = dataUrl;
         }
@@ -780,8 +797,8 @@ async function callClaudeAPI(apiKey: string, prompt: string, base64: string, res
 
 async function callAIWithImage(model: string, apiKey: string, prompt: string, base64: string): Promise<string> {
     const dummyEl = document.createElement('div');
-    if (model === 'gemini') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-2.5-flash-image');
-    if (model === 'gemini2') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-3.1-flash-image-preview');
+    if (model === 'gemini') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-1.5-flash');
+    if (model === 'gemini2') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-2.0-flash-exp');
     if (model === 'chatgpt') return callChatGPTAPI(apiKey, prompt, base64, dummyEl);
     if (model === 'claude') return callClaudeAPI(apiKey, prompt, base64, dummyEl);
     throw new Error('지원하지 않는 모델입니다.');
@@ -862,10 +879,10 @@ export function manageAIKeys() {
                     <h4 style="font-size: 13px; margin-bottom: 12px;">🤖 기본 서비스 선택</h4>
                     <div style="display: flex; gap: 16px;">
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
-                            <input type="radio" name="defaultAI" value="gemini" ${s.defaultAI === 'gemini' || !s.defaultAI ? 'checked' : ''}> Gemini 2.5 Flash
+                            <input type="radio" name="defaultAI" value="gemini" ${s.defaultAI === 'gemini' || !s.defaultAI ? 'checked' : ''}> Gemini 1.5 Flash
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer; color: #0078d7; font-weight: bold;">
-                            <input type="radio" name="defaultAI" value="gemini2" ${s.defaultAI === 'gemini2' ? 'checked' : ''}> Gemini 3.1 Flash (추천)
+                            <input type="radio" name="defaultAI" value="gemini2" ${s.defaultAI === 'gemini2' ? 'checked' : ''}> Gemini 2.0 Flash Exp
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
                             <input type="radio" name="defaultAI" value="chatgpt" ${s.defaultAI === 'chatgpt' ? 'checked' : ''}> ChatGPT
