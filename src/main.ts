@@ -21,7 +21,7 @@ import {
   updateBatchEditButton, updateThumbnailSelection,
   moveImageToPosition, showContextMenu, removeImage,
 } from './ui/thumbnail';
-import { showBatchEditDialog } from './modules/selection';
+import { showBatchEditDialog, processBatchEdit } from './modules/selection';
 import {
   toggleImagePanel, toggleEditPanel,
   showFilterMenu, applyPresetFilter, applyFilmEffect,
@@ -107,7 +107,7 @@ Object.assign(window, {
   // 선택/삭제/일괄편집
   toggleImageSelection, selectAllImages, deselectAllImages,
   deleteSelectedImages, showDeleteSelectionMenu,
-  showBatchEditDialog, updateBatchEditButton, updateThumbnailSelection,
+  showBatchEditDialog, processBatchEdit, updateBatchEditButton, updateThumbnailSelection,
   moveImageToPosition, showContextMenu, removeImage,
   // 이미지 편집/필터
   toggleImagePanel, toggleEditPanel,

@@ -131,15 +131,48 @@ export async function sendAIPrompt() {
     try {
         // 이미지를 base64로 변환
         const imageBase64 = await imageToBase64(app.currentImage);
+        let result = '';
 
         if (model === 'gemini') {
-            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-2.5-flash-image');
+            result = await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-2.5-flash-image');
         } else if (model === 'gemini2') {
-            await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-3.1-flash-image-preview');
+            result = await callGeminiAPI(apiKey, prompt, imageBase64, responseText, 'gemini-1.5-flash-8b');
         } else if (model === 'chatgpt') {
-            await callChatGPTAPI(apiKey, prompt, imageBase64, responseText);
+            result = await callChatGPTAPI(apiKey, prompt, imageBase64, responseText);
         } else if (model === 'claude') {
-            await callClaudeAPI(apiKey, prompt, imageBase64, responseText);
+            result = await callClaudeAPI(apiKey, prompt, imageBase64, responseText);
+        }
+
+        // 결과에 이미지 데이터가 포함되어 있는지 확인 (Markdown 또는 base64)
+        const base64Match = result.match(/data:image\/[a-zA-Z]*;base64,([^"'\s)>]+)/);
+        const rawBase64Match = result.match(/[A-Za-z0-9+/]{100,}/); // 긴 base64 문자열
+
+        if (base64Match || rawBase64Match) {
+            const dataUrl = base64Match ? base64Match[0] : `data:image/png;base64,${rawBase64Match[0]}`;
+            
+            const img = new Image();
+            img.onload = () => {
+                app.canvas.width = img.width;
+                app.canvas.height = img.height;
+                app.ctx.drawImage(img, 0, 0);
+                app.currentImage = img;
+                app.originalImage = img;
+                saveHistory();
+                renderCanvas();
+                showToast('✅ AI 생성 이미지 적용 완료');
+                
+                // 결과창에 이미지 표시
+                const imgPreview = document.createElement('img');
+                imgPreview.src = dataUrl;
+                imgPreview.style.maxWidth = '100%';
+                imgPreview.style.marginTop = '10px';
+                imgPreview.style.borderRadius = '4px';
+                imgPreview.style.cursor = 'pointer';
+                imgPreview.title = '클릭하면 크게 봅니다';
+                imgPreview.onclick = () => window.open(dataUrl);
+                responseText.appendChild(imgPreview);
+            };
+            img.src = dataUrl;
         }
     } catch (error) {
         responseText.innerHTML = `

@@ -19,7 +19,7 @@
             파일
             <div class="dropdown-menu">
                 <div class="dropdown-item" onclick="openFiles()">
-                    <span>이미지 열기</span>
+                    <span>열기</span>
                     <span class="shortcut">Ctrl+O</span>
                 </div>
                 <div class="dropdown-item" onclick="openFolder()">
@@ -197,7 +197,7 @@
         <!-- ══ 이미지 툴바 그룹 (이미지 선택 시 표시) ══ -->
         <div id="imageToolbarGroups" style="display:contents;">
             <div class="tool-group">
-                <button class="tool-btn" onclick="openFiles()" title="이미지 열기 (Ctrl+O)">
+                <button class="tool-btn" onclick="openFiles()" title="열기 (Ctrl+O)">
                     <div class="tool-icon">📁</div>
                     <div class="tool-label">열기</div>
                 </button>
@@ -497,10 +497,10 @@
         <!-- 썸네일 패널 -->
         <div class="thumbnail-panel" id="thumbnailPanel">
             <div class="panel-header">
-                <span>이미지 목록<span id="selectedCount" onclick="showDeleteSelectionMenu()" style="margin-left: 8px; color: #28a745; font-weight: bold; display: none; cursor: pointer;"></span><span onclick="showDeleteSelectionMenu()" style="margin-left: 8px; cursor: pointer; opacity: 0.6; font-size: 11px;" title="선택 메뉴">☰</span></span>
+                <span>목록<span id="selectedCount" onclick="showDeleteSelectionMenu()" style="margin-left: 8px; color: #28a745; font-weight: bold; display: none; cursor: pointer;"></span><span onclick="showDeleteSelectionMenu()" style="margin-left: 8px; cursor: pointer; opacity: 0.6; font-size: 11px;" title="선택 메뉴">☰</span></span>
                 <span class="panel-toggle" onclick="toggleThumbnails()" title="패널 접기/펼치기 (F9)">◀</span>
             </div>
-            <div class="panel-tab" onclick="toggleThumbnails()">이미지 목록</div>
+            <div class="panel-tab" onclick="toggleThumbnails()">목록</div>
             <div class="thumbnail-list" id="thumbnailList">
                 <!-- 동적 생성 -->
             </div>
