@@ -182,8 +182,21 @@ export async function sendAIPrompt() {
                 imgPreview.style.borderRadius = '4px';
                 imgPreview.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
                 imgPreview.style.cursor = 'pointer';
-                imgPreview.title = '클릭하면 크게 봅니다';
-                imgPreview.onclick = () => window.open(dataUrl);
+                imgPreview.title = '클릭하면 캔버스에 적용합니다';
+                imgPreview.onclick = () => {
+                    const canvasImg = new Image();
+                    canvasImg.onload = () => {
+                        app.canvas.width = canvasImg.width;
+                        app.canvas.height = canvasImg.height;
+                        app.ctx.drawImage(canvasImg, 0, 0);
+                        app.currentImage = canvasImg;
+                        app.originalImage = canvasImg;
+                        saveHistory();
+                        renderCanvas();
+                        showToast('✅ 이미지 적용 완료');
+                    };
+                    canvasImg.src = dataUrl;
+                };
                 responseText.appendChild(imgPreview);
             };
             img.onerror = () => {
@@ -388,7 +401,7 @@ export async function aiColorize() {
     }
 }
 
-export async function aiObjectRemove() {
+export async function aiOCR() {
     if (!app.currentImage) {
         alert('이미지를 먼저 열어주세요.');
         return;
@@ -405,20 +418,39 @@ export async function aiObjectRemove() {
         return;
     }
 
-    const progressModal = showProgressModal('객체 제거 중...', 'AI가 선택된 객체를 자연스럽게 제거하고 있습니다.');
+    const progressModal = showProgressModal('텍스트 분석 중...', 'AI가 이미지에서 글자를 추출하고 있습니다.');
 
     try {
         const imageBase64 = await imageToBase64(app.currentImage);
-        const prompt = '이 이미지에서 제거할 수 있는 객체들을 식별하고, 각 객체를 제거하는 방법을 설명해주세요.';
+        const prompt = '이 이미지에 포함된 모든 텍스트를 추출해서 보여주세요. 텍스트가 여러 줄이면 줄 바꿈을 유지하고, 가능한 정확하게 추출해주세요.';
 
         const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
 
         progressModal.remove();
-        alert('✅ AI 분석:\n\n' + result + '\n\n참고: 실제 객체 제거는 전문 편집 API가 필요합니다.');
+        
+        // 결과 모달 표시
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay active';
+        modal.innerHTML = `
+            <div class="modal-content" style="width: 500px;">
+                <div class="modal-title">
+                    <span>📝 텍스트 추출 결과</span>
+                    <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+                </div>
+                <div class="modal-body">
+                    <textarea readonly style="width: 100%; height: 300px; padding: 12px; border: 1px solid #c0c0c0; font-size: 13px; line-height: 1.5; background: #fdfdfd; resize: none;">${result}</textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-small" onclick="navigator.clipboard.writeText(this.closest('.modal-content').querySelector('textarea').value).then(() => showToast('✅ 복사 완료'))">전체 복사</button>
+                    <button class="btn-small" onclick="this.closest('.modal-overlay').remove()">닫기</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
 
     } catch (error) {
         progressModal.remove();
-        showErrorModal('객체 제거 실패', error.message, error.details);
+        showErrorModal('텍스트 추출 실패', error.message, error.details);
     }
 }
 
