@@ -137,9 +137,9 @@ export async function sendAIPrompt() {
         const enhancedPrompt = `${prompt}\n\n[System Instruction: 만약 이미지를 수정하거나 새로운 디자인 예시를 보여줘야 한다면, 반드시 해당 이미지를 'data:image/png;base64,'로 시작하는 base64 문자열 형식으로 응답 본문에 포함해 주세요. 텍스트 설명과 함께 이미지를 보내주시면 감사하겠습니다.]`;
 
         if (model === 'gemini') {
-            result = await callGeminiAPI(apiKey, enhancedPrompt, imageBase64, responseText, 'gemini-1.5-flash');
+            result = await callGeminiAPI(apiKey, enhancedPrompt, imageBase64, responseText, 'gemini-2.5-flash-image');
         } else if (model === 'gemini2') {
-            result = await callGeminiAPI(apiKey, enhancedPrompt, imageBase64, responseText, 'gemini-2.0-flash-exp');
+            result = await callGeminiAPI(apiKey, enhancedPrompt, imageBase64, responseText, 'gemini-3.1-flash-image-preview');
         } else if (model === 'chatgpt') {
             result = await callChatGPTAPI(apiKey, enhancedPrompt, imageBase64, responseText);
         } else if (model === 'claude') {
@@ -797,8 +797,8 @@ async function callClaudeAPI(apiKey: string, prompt: string, base64: string, res
 
 async function callAIWithImage(model: string, apiKey: string, prompt: string, base64: string): Promise<string> {
     const dummyEl = document.createElement('div');
-    if (model === 'gemini') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-1.5-flash');
-    if (model === 'gemini2') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-2.0-flash-exp');
+    if (model === 'gemini') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-2.5-flash-image');
+    if (model === 'gemini2') return callGeminiAPI(apiKey, prompt, base64, dummyEl, 'gemini-3.1-flash-image-preview');
     if (model === 'chatgpt') return callChatGPTAPI(apiKey, prompt, base64, dummyEl);
     if (model === 'claude') return callClaudeAPI(apiKey, prompt, base64, dummyEl);
     throw new Error('지원하지 않는 모델입니다.');
@@ -879,10 +879,10 @@ export function manageAIKeys() {
                     <h4 style="font-size: 13px; margin-bottom: 12px;">🤖 기본 서비스 선택</h4>
                     <div style="display: flex; gap: 16px;">
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
-                            <input type="radio" name="defaultAI" value="gemini" ${s.defaultAI === 'gemini' || !s.defaultAI ? 'checked' : ''}> Gemini 1.5 Flash
+                            <input type="radio" name="defaultAI" value="gemini" ${s.defaultAI === 'gemini' || !s.defaultAI ? 'checked' : ''}> Gemini 2.5 Flash
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer; color: #0078d7; font-weight: bold;">
-                            <input type="radio" name="defaultAI" value="gemini2" ${s.defaultAI === 'gemini2' ? 'checked' : ''}> Gemini 2.0 Flash Exp
+                            <input type="radio" name="defaultAI" value="gemini2" ${s.defaultAI === 'gemini2' ? 'checked' : ''}> Gemini 3.1 Flash (추천)
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; font-size:12px; cursor:pointer;">
                             <input type="radio" name="defaultAI" value="chatgpt" ${s.defaultAI === 'chatgpt' ? 'checked' : ''}> ChatGPT
