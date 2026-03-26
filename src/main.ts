@@ -34,7 +34,7 @@ import {
 } from './modules/imageEdit';
 import {
   showCaptureMenu, showAIPrompt, sendAIPrompt,
-  aiUpscale, aiRemoveBackground, aiEnhance, aiColorize, aiObjectRemove,
+  aiUpscale, aiRemoveBackground, aiEnhance, aiColorize, aiObjectRemove, aiOCR,
   showSettings, saveSettings, saveImageAs, printImage,
   showProgressModal, startSlideshow,
   captureFullScreen, captureWindow, captureArea,
@@ -120,7 +120,7 @@ Object.assign(window, {
   autoLevel, autoColor, backlightCorrection, reduceNoise, resetEditFilters,
   // 캡처/AI/설정
   showCaptureMenu, showAIPrompt, sendAIPrompt,
-  aiUpscale, aiRemoveBackground, aiEnhance, aiColorize, aiObjectRemove,
+  aiUpscale, aiRemoveBackground, aiEnhance, aiColorize, aiObjectRemove, aiOCR,
   showSettings, saveSettings, saveImageAs, printImage,
   showProgressModal, startSlideshow,
   captureFullScreen, captureWindow, captureArea,

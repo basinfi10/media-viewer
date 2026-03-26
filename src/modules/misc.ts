@@ -401,6 +401,40 @@ export async function aiColorize() {
     }
 }
 
+export async function aiObjectRemove() {
+    if (!app.currentImage) {
+        alert('이미지를 먼저 열어주세요.');
+        return;
+    }
+
+    const settings = JSON.parse(localStorage.getItem('imgViewerSettings') || '{}');
+    const defaultAI = settings.defaultAI || 'gemini';
+    const apiKey = (defaultAI === 'gemini' || defaultAI === 'gemini2') ? settings.apiGemini :
+        defaultAI === 'chatgpt' ? settings.apiChatGPT :
+            settings.apiClaude;
+
+    if (!apiKey) {
+        alert('AI API 키가 설정되지 않았습니다.\nAI 기능 > API 키 관리에서 설정해주세요.');
+        return;
+    }
+
+    const progressModal = showProgressModal('객체 제거 중...', 'AI가 선택된 객체를 자연스럽게 제거하고 있습니다.');
+
+    try {
+        const imageBase64 = await imageToBase64(app.currentImage);
+        const prompt = '이 이미지에서 제거할 수 있는 객체들을 식별하고, 각 객체를 제거하는 방법을 설명해주세요.';
+
+        const result = await callAIWithImage(defaultAI, apiKey, prompt, imageBase64);
+
+        progressModal.remove();
+        alert('✅ AI 분석:\n\n' + result + '\n\n참고: 실제 객체 제거는 전문 편집 API가 필요합니다.');
+
+    } catch (error) {
+        progressModal.remove();
+        showErrorModal('객체 제거 실패', error.message, error.details);
+    }
+}
+
 export async function aiOCR() {
     if (!app.currentImage) {
         alert('이미지를 먼저 열어주세요.');
