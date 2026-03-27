@@ -910,11 +910,27 @@
             .toolbar { padding: 5px 6px; }
             .tool-icon { font-size: 22px !important; }
             .tool-btn { min-width: 44px; padding: 4px 6px; }
-            /* 썸네일 패널 24px로 유지 (접기/펼치기 가능) */
+            /* 썸네일 패널: 세로 모드에서는 캔버스 위에 겹쳐서 표시 (오버레이) */
             .thumbnail-panel {
                 display: flex !important;
+                position: absolute !important;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 1001;
+                background: rgba(232, 232, 232, 0.96) !important;
+                box-shadow: 2px 0 12px rgba(0,0,0,0.3);
+                transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            /* 펼쳐졌을 때: 넉넉한 너비(200px) */
+            .thumbnail-panel:not(.collapsed) {
+                width: 200px !important;
+            }
+            /* 접혔을 때: 24px 스트립 */
+            .thumbnail-panel.collapsed {
                 width: 24px !important;
-                overflow: visible !important;
+                box-shadow: none;
+                background: rgba(232, 232, 232, 0.8) !important;
             }
             .thumbnail-panel.collapsed .panel-tab {
                 display: block !important;

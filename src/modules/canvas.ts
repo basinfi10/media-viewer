@@ -2,6 +2,7 @@ import { app, defaultFilters } from '../store';
 import type { CropRect } from '../types';
 import { showToast } from '../utils';
 import { updateStatus } from './player';
+import { collapseThumbnails } from '../ui/sidebar';
 
 // ── 캔버스 렌더링 ─────────────────────────────────────────────
 export function renderCanvas(): void {
@@ -327,6 +328,11 @@ export function setupCanvasEvents(): void {
 
   // 마우스 드래그 팬
   canvas.addEventListener('mousedown', (e) => {
+    // 모바일/작은 화면에서 캔버스 클릭 시 사이드바 자동 접기
+    if (window.innerWidth < 480) {
+      collapseThumbnails();
+    }
+
     if (app.cropMode) { handleCropMouseDown(e.offsetX, e.offsetY); return; }
     app.isDragging = true;
     app.dragStart  = { x: e.clientX - app.pan.x, y: e.clientY - app.pan.y };
@@ -348,6 +354,11 @@ export function setupCanvasEvents(): void {
   // 터치 이벤트
   let lastPinchDist = 0;
   canvas.addEventListener('touchstart', (e) => {
+    // 모바일 세로 모드에서 캔버스 터치 시 사이드바 자동 접기
+    if (window.innerWidth < 480) {
+      collapseThumbnails();
+    }
+
     e.preventDefault();
     if (e.touches.length === 2) {
       lastPinchDist = Math.hypot(
