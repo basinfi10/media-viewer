@@ -910,10 +910,19 @@
             .toolbar { padding: 5px 6px; }
             .tool-icon { font-size: 22px !important; }
             .tool-btn { min-width: 44px; padding: 4px 6px; }
-            .tool-group-label { font-size: 11px; }
-
-            /* 썸네일 패널 숨김 (세로폰은 공간 부족) */
-            .thumbnail-panel { display: none; }
+            /* 썸네일 패널 24px로 유지 (접기/펼치기 가능) */
+            .thumbnail-panel {
+                display: flex !important;
+                width: 24px !important;
+                overflow: visible !important;
+            }
+            .thumbnail-panel.collapsed .panel-tab {
+                display: block !important;
+            }
+            .thumbnail-panel.collapsed .panel-header,
+            .thumbnail-panel.collapsed .thumbnail-list {
+                display: none !important;
+            }
 
             /* 상태바 */
             .statusbar { height: 28px; font-size: 13px; }
@@ -946,7 +955,14 @@
         /* 스마트폰 가로 모드 */
         @media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
             .menubar { height: 28px; font-size: 13px; }
-            .thumbnail-panel { display: none; }
+            .thumbnail-panel {
+                display: flex !important;
+                width: 24px !important;
+                overflow: visible !important;
+            }
+            .thumbnail-panel.collapsed .panel-tab {
+                display: block !important;
+            }
             .main-container {
                 height: calc(100vh - 28px - var(--toolbar-h, 46px) - 20px) !important;
             }

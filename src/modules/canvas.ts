@@ -391,7 +391,34 @@ export function setupCanvasEvents(): void {
   canvas.addEventListener('touchend', (e) => {
     e.preventDefault();
     lastPinchDist = 0;
-    if (app.cropMode) { app.cropDragHandle = null; return; }
+
+    if (app.cropMode && app.cropRect) {
+      const now = Date.now();
+      const touch = e.changedTouches[0];
+      const rect = canvas.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      // 더블 탭 감지 (300ms 이내, 같은 위치 근처)
+      if (now - app.lastTouchTime < 300 && app.lastTouchPos) {
+        const dx = Math.abs(x - app.lastTouchPos.x);
+        const dy = Math.abs(y - app.lastTouchPos.y);
+        if (dx < 30 && dy < 30) {
+          // 크롭 영역 내부인지 확인
+          const r = app.cropRect;
+          if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) {
+            applyCrop();
+            app.lastTouchTime = 0;
+            return;
+          }
+        }
+      }
+      app.lastTouchTime = now;
+      app.lastTouchPos = { x, y };
+      app.cropDragHandle = null;
+      return;
+    }
+
     app.isDragging = false;
   });
 }

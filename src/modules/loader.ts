@@ -101,17 +101,39 @@ export async function addImage(file: File): Promise<void> {
       createThumbnailEl(app.images.length - 1);
       resolve();
     };
-    img.onerror = () => {
-      // fallback
-      const item: MediaItem = {
-        type: 'image', file, url,
-        name: file.name, size: file.size,
-        format: file.type || 'image/png',
-        modified: false,
-      };
-      app.images.push(item);
-      createThumbnailEl(app.images.length - 1);
-      resolve();
+    img.onerror = async () => {
+      // Blob URL 실패 시 DataURL로 재시도 (Smart TV 대응)
+      try {
+        const dataUrl = await readFileAsDataURL(file);
+        img.onload = () => {
+          const item: MediaItem = {
+            type: 'image', file, url: dataUrl,
+            img,
+            name: file.name, size: file.size,
+            width: img.naturalWidth, height: img.naturalHeight,
+            format: file.type || 'image/png',
+            modified: false,
+          };
+          app.images.push(item);
+          createThumbnailEl(app.images.length - 1);
+          resolve();
+        };
+        img.onerror = () => {
+          // 최종 실패 시 더미 데이터 추가
+          const item: MediaItem = {
+            type: 'image', file, url: '',
+            name: file.name, size: file.size,
+            format: file.type || 'image/png',
+            modified: false,
+          };
+          app.images.push(item);
+          createThumbnailEl(app.images.length - 1);
+          resolve();
+        };
+        img.src = dataUrl;
+      } catch {
+        resolve();
+      }
     };
     img.src = url;
   });
