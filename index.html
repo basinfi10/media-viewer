@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta http-equiv="Permissions-Policy" content="display-capture=*">
-  <title>미디어 뷰어 v3.35.4</title>
+  <title>미디어 뷰어 v3.35.5</title>
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -402,15 +402,16 @@
 
             <!-- 그룹8: 이동 -->
             <div class="tool-group">
-                <button class="tool-btn" onclick="prevImage()" title="이전 영상">
-                    <div class="tool-icon">⟨</div>
+                <button class="tool-btn" onclick="prevVideo()" title="이전 영상">
+                    <div class="tool-icon">|⟨</div>
                     <div class="tool-label">이전</div>
                 </button>
-                <button class="tool-btn" onclick="nextImage()" title="다음 영상">
-                    <div class="tool-icon">⟩</div>
+                <button class="tool-btn" onclick="nextVideo()" title="다음 영상">
+                    <div class="tool-icon">⟩|</div>
                     <div class="tool-label">다음</div>
                 </button>
             </div>
+        </div><!-- /#videoToolbarGroups -->
 
         <!-- ══ 오디오 툴바 그룹 ══ -->
         <div id="audioToolbarGroups" style="display:none;">
@@ -493,8 +494,6 @@
                 </button>
             </div>
         </div><!-- /#audioToolbarGroups -->
-
-        </div><!-- /#videoToolbarGroups -->
     </div>
 
     <!-- 메인 컨텐츠 -->
