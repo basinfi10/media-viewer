@@ -98,10 +98,24 @@ function _auBindEvents(): void {
       const pct  = Math.max(0, Math.min(1, (cx - rect.left) / rect.width));
       if (_au.el?.duration) _au.el.currentTime = pct * _au.el.duration;
     };
-    track.addEventListener('mousedown',  seek as EventListener);
-    track.addEventListener('touchstart', seek as EventListener, { passive: true });
-    track.addEventListener('mousemove',  (e: MouseEvent) => { if (e.buttons === 1) seek(e); });
-    track.addEventListener('touchmove',  seek as EventListener, { passive: true });
+
+    const onStart = (e: MouseEvent | TouchEvent) => {
+       seek(e);
+       const onMove = (me: MouseEvent | TouchEvent) => seek(me);
+       const onEnd = () => {
+         window.removeEventListener('mousemove', onMove);
+         window.removeEventListener('mouseup', onEnd);
+         window.removeEventListener('touchmove', onMove);
+         window.removeEventListener('touchend', onEnd);
+       };
+       window.addEventListener('mousemove', onMove);
+       window.addEventListener('mouseup', onEnd);
+       window.addEventListener('touchmove', onMove, { passive: false });
+       window.addEventListener('touchend', onEnd);
+    };
+
+    track.addEventListener('mousedown',  onStart as EventListener);
+    track.addEventListener('touchstart', onStart as EventListener, { passive: false });
   }
 }
 

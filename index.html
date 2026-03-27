@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta http-equiv="Permissions-Policy" content="display-capture=*">
-  <title>미디어 뷰어 v3.35.5</title>
+  <title>미디어 뷰어 v3.35.6</title>
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -419,78 +419,60 @@
             <div class="tool-group">
                 <button class="tool-btn" onclick="openFiles()" title="파일 열기">
                     <div class="tool-icon">📁</div>
-                    <div class="tool-label">열기</div>
                 </button>
             </div>
             <!-- 그룹2: 재생 제어 -->
             <div class="tool-group">
-                <div class="tool-group-label">재생</div>
                 <button class="tool-btn" onclick="audioPrev()" title="이전 곡 (←)">
                     <div class="tool-icon">⏮</div>
-                    <div class="tool-label">이전</div>
                 </button>
                 <button class="tool-btn" id="tbAudioPlayBtn" onclick="audioTogglePlay()" title="재생/일시정지 (Space)">
                     <div class="tool-icon">▶</div>
-                    <div class="tool-label">재생</div>
                 </button>
                 <button class="tool-btn" onclick="audioNext()" title="다음 곡 (→)">
                     <div class="tool-icon">⏭</div>
-                    <div class="tool-label">다음</div>
                 </button>
             </div>
             <!-- 그룹3: 모드 -->
             <div class="tool-group">
-                <div class="tool-group-label">모드</div>
                 <button class="tool-btn" id="tbAudioRepeatBtn" onclick="audioToggleRepeat()" title="반복 모드">
                     <div class="tool-icon">🔁</div>
-                    <div class="tool-label">반복</div>
                 </button>
                 <button class="tool-btn" id="tbAudioShuffleBtn" onclick="audioToggleShuffle()" title="셔플">
                     <div class="tool-icon">🔀</div>
-                    <div class="tool-label">셔플</div>
                 </button>
             </div>
             <!-- 그룹4: 볼륨 -->
             <div class="tool-group">
-                <div class="tool-group-label">볼륨</div>
                 <button class="tool-btn" id="tbAudioVolBtn" onclick="audioToggleMute()" title="음소거">
                     <div class="tool-icon">🔊</div>
-                    <div class="tool-label">음소거</div>
                 </button>
                 <div style="display:flex;flex-direction:column;align-items:center;padding:2px 4px;min-width:60px;">
                     <input type="range" id="tbAudioVol" min="0" max="1" step="0.05" value="1"
                            oninput="audioSetVolume(this.value)"
                            style="width:60px;accent-color:#4fa8ff;cursor:pointer;"
                            title="볼륨">
-                    <div class="tool-label">볼륨</div>
                 </div>
             </div>
             <!-- 그룹5: 속도 -->
             <div class="tool-group">
-                <div class="tool-group-label">속도</div>
                 <button class="tool-btn" onclick="audioSetSpeed(0.75)" title="0.75배속">
                     <div class="tool-icon">🐢</div>
-                    <div class="tool-label">0.75x</div>
                 </button>
                 <button class="tool-btn" id="tbAudioSpeed1Btn" onclick="audioSetSpeed(1)" title="1배속(기본)">
                     <div class="tool-icon">▶▶</div>
-                    <div class="tool-label" style="color:#4fa8ff;font-weight:bold;">1x</div>
                 </button>
                 <button class="tool-btn" onclick="audioSetSpeed(1.5)" title="1.5배속">
                     <div class="tool-icon">🐇</div>
-                    <div class="tool-label">1.5x</div>
                 </button>
                 <button class="tool-btn" onclick="audioSetSpeed(2)" title="2배속">
                     <div class="tool-icon">⚡</div>
-                    <div class="tool-label">2x</div>
                 </button>
             </div>
             <!-- 그룹6: 플레이리스트 -->
             <div class="tool-group">
-                <div class="tool-group-label">목록</div>
                 <button class="tool-btn" onclick="audioTogglePlaylist()" title="플레이리스트 열기/닫기">
                     <div class="tool-icon">🎵</div>
-                    <div class="tool-label">목록</div>
                 </button>
             </div>
         </div><!-- /#audioToolbarGroups -->
