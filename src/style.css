@@ -148,6 +148,7 @@
         /* 3. 메인 컨텐츠 */
         .main-container {
             display: flex;
+            position: relative; /* 자식 요소인 썸네일 패널의 기준점 */
             height: calc(100vh - 24px - var(--toolbar-h, 46px) - 22px); /* menubar - toolbar - statusbar */
             background: #808080;
         }
