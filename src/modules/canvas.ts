@@ -35,13 +35,24 @@ export function renderCanvas(): void {
   const c = 100 + f.contrast;
   const s = 100 + f.saturation;
   const h = f.hue ?? 0;
-  ctx.filter = [
-    `brightness(${b}%)`,
-    `contrast(${c}%)`,
-    `saturate(${s}%)`,
-    h !== 0 ? `hue-rotate(${h}deg)` : '',
-    f.blur > 0 ? `blur(${f.blur}px)` : '',
-  ].filter(Boolean).join(' ') || 'none';
+  
+  // ── Smart TV 호환성: ctx.filter 보호 ──
+  try {
+    const filterString = [
+      `brightness(${b}%)`,
+      `contrast(${c}%)`,
+      `saturate(${s}%)`,
+      h !== 0 ? `hue-rotate(${h}deg)` : '',
+      f.blur > 0 ? `blur(${f.blur}px)` : '',
+    ].filter(Boolean).join(' ') || 'none';
+
+    if ('filter' in ctx) {
+      ctx.filter = filterString;
+    }
+  } catch (err) {
+    console.warn('Canvas filter apply error:', err);
+    if ('filter' in ctx) ctx.filter = 'none';
+  }
 
   // 플립
   if (f.flipH || f.flipV) {
@@ -49,7 +60,11 @@ export function renderCanvas(): void {
   }
 
   ctx.drawImage(currentImage, -iw / 2, -ih / 2, iw, ih);
-  ctx.filter = 'none';
+
+  try {
+    if ('filter' in ctx) ctx.filter = 'none';
+  } catch { /* ignore */ }
+  
   ctx.restore();
 
   // 비네팅

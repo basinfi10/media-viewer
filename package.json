@@ -1,6 +1,6 @@
 {
   "name": "media-viewer",
-  "version": "3.35.6",
+  "version": "3.35.7",
   "private": true,
   "scripts": {
     "dev": "vite",

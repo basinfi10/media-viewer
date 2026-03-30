@@ -122,7 +122,8 @@ export async function makePlayableUrl(file: File): Promise<string> {
 export function checkMemory(): boolean {
   const mem = (performance as unknown as { memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number } }).memory;
   if (!mem) return true;
-  return mem.usedJSHeapSize / mem.jsHeapSizeLimit < 0.85;
+  // Smart TV 등에서 메모리 측정이 불안정할 수 있으므로 임계치를 90%로 완화
+  return mem.usedJSHeapSize / mem.jsHeapSizeLimit < 0.90;
 }
 
 export function getMemoryInfo(): { used: number; limit: number } | null {

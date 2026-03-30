@@ -49,8 +49,11 @@ export function loadImage(index: number): void {
 
   // 캔버스에 이미지 그리기
   if (!data.img) return;
-  app.currentImage   = data.img.cloneNode() as HTMLImageElement;
-  app.originalImage  = data.img.cloneNode() as HTMLImageElement;
+
+  // cloneNode()는 일부 구형 브라우저(Smart TV 등)에서 불안정할 수 있으므로 
+  // 원본을 참조하거나 필요 시에만 새 Image를 생성합니다.
+  app.currentImage  = data.img;
+  app.originalImage = data.img; 
   app.zoom     = 1;
   app.pan      = { x: 0, y: 0 };
   app.rotation = 0;
@@ -58,8 +61,8 @@ export function loadImage(index: number): void {
   app.canvas.style.display = 'block';
 
   // 캔버스 크기 = 이미지 크기
-  app.canvas.width  = data.img.naturalWidth;
-  app.canvas.height = data.img.naturalHeight;
+  app.canvas.width  = data.img.naturalWidth || 800;
+  app.canvas.height = data.img.naturalHeight || 600;
 
   // 줌 버튼 표시
   ['zoomOutBtn','zoomLevel','zoomInBtn','fitScreenBtn','actualSizeBtn'].forEach(id => {

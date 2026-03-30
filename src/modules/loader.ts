@@ -88,7 +88,12 @@ export async function addImage(file: File): Promise<void> {
   return new Promise((resolve) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
-    img.onload = () => {
+    img.onload = async () => {
+      try {
+        if ('decode' in img) await img.decode();
+      } catch (e) {
+        console.warn('Image decode failed, but trying to proceed:', e);
+      }
       const item: MediaItem = {
         type: 'image', file, url,
         img,
